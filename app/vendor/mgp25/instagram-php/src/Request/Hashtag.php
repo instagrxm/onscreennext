@@ -4,7 +4,6 @@ namespace InstagramAPI\Request;
 
 use InstagramAPI\Exception\RequestHeadersTooLargeException;
 use InstagramAPI\Response;
-use InstagramAPI\Constants;
 use InstagramAPI\Utils;
 
 /**
@@ -29,27 +28,6 @@ class Hashtag extends RequestCollection
         $urlHashtag = urlencode($hashtag); // Necessary for non-English chars.
         return $this->ig->request("tags/{$urlHashtag}/info/")
             ->getResponse(new Response\TagInfoResponse());
-    }
-
-    /**
-     * Get detailed hashtag information.
-     *
-     * @param string $hashtag The hashtag, not including the "#".
-     *
-     * @throws \InvalidArgumentException
-     * @throws \InstagramAPI\Exception\InstagramException
-     *
-     * @return \InstagramAPI\Response\GraphqlResponse
-     */
-    public function getInfoGraph(
-        $hashtag)
-    {
-        Utils::throwIfInvalidHashtag($hashtag);
-        $urlHashtag = urlencode($hashtag); // Necessary for non-English chars.
-        return $request = $this->ig->request("explore/tags/{$hashtag}/?__a=1")
-            ->setVersion(5)
-            ->setSignedPost(false)
-            ->getResponse(new Response\GraphqlResponse());
     }
 
     /**
@@ -254,7 +232,7 @@ class Hashtag extends RequestCollection
     }
 
     /**
-     * Get the feed for a hashtag (DEPRECATED, use getSection() instead)
+     * Get the feed for a hashtag.
      *
      * @deprecated The feed endpoint has been removed in favor of the hashtag section API.
      * This function is now just wrapping Hashtag::getSection() and will be removed shortly.
@@ -271,7 +249,7 @@ class Hashtag extends RequestCollection
      *
      * @see Hashtag::getSection() To see the function that will replace this one in the future.
      */
-    public function getFeed(
+     public function getFeed(
         $hashtag,
         $rankToken,
         $maxId = null)
@@ -307,29 +285,16 @@ class Hashtag extends RequestCollection
     {
         Utils::throwIfInvalidHashtag($hashtag);
 
-        $request = $this->ig->request("graphql/query/")
+        return $request = $this->ig->request("graphql/query/")
             ->setVersion(5)
-            ->setAddDefaultHeaders(false)
             ->setSignedPost(false)
-            ->setIsBodyCompressed(false)
-            ->addHeader('X-CSRFToken', $this->ig->client->getToken())
-            ->addHeader('Referer', 'https://www.instagram.com/')
-            ->addHeader('Host', 'www.instagram.com')
-            ->addHeader('X-Requested-With', 'XMLHttpRequest')
-            ->addHeader('X-IG-App-ID', Constants::IG_WEB_APPLICATION_ID)
-            ->addHeader('X-IG-WWW-Claim', Constants::X_IG_WWW_CLAIM);
-            if ($this->ig->getIsAndroid()) {
-                $request->addHeader('User-Agent', sprintf('Mozilla/5.0 (Linux; Android %s; Google) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Mobile Safari/537.36', $this->ig->device->getAndroidRelease()));
-            } else {
-                $request->addHeader('User-Agent', 'Mozilla/5.0 (iPhone; CPU iPhone OS ' . Constants::IOS_VERSION . ' like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.4 Mobile/15E148 Safari/604.1');
-            }
-            $request->addParam('query_hash', '7dabc71d3e758b1ec19ffb85639e427b')
-                    ->addParam('variables', json_encode([
-                        "tag_name" => $hashtag,
-                        "first" => $next_page,
-                        "after" => $end_cursor,
-                    ]));
-        return $request->getResponse(new Response\GraphqlResponse());
+            ->addParam('query_hash', 'bd33792e9f52a56ae8fa0985521d141d')
+            ->addParam('variables', json_encode([
+                "tag_name" => $hashtag,
+                "first" => $next_page,
+                "after" => $end_cursor,
+            ]))
+            ->getResponse(new Response\GraphqlResponse());
     }
 
     /**
@@ -346,33 +311,6 @@ class Hashtag extends RequestCollection
     {
         return $this->ig->request("users/{$userId}/following_tags_info/")
             ->getResponse(new Response\HashtagsResponse());
-    }
-
-    /**
-     * Get list of which a hashtag is following with web API
-     *
-     * @param string      $userId        Numerical UserPK ID.
-     * 
-     * @throws \InvalidArgumentException
-     * @throws \InstagramAPI\Exception\InstagramException
-     *
-     * @return \InstagramAPI\Response\GraphqlResponse
-     */
-    public function getFollowingHashtagGraph(
-        $userId)
-    {
-        if ($userId == null) {
-            throw new \InvalidArgumentException('Empty $userId sent to getFollowingHashtagGraph() function.');
-        }
-
-        return $request = $this->ig->request("graphql/query/")
-            ->setVersion(5)
-            ->setSignedPost(false)
-            ->addParam('query_hash', 'e6306cc3dbe69d6a82ef8b5f8654c50b')
-            ->addParam('variables', json_encode([
-                "id" => $userId
-            ]))
-            ->getResponse(new Response\GraphqlResponse());
     }
 
     /**

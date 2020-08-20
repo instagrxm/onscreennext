@@ -391,6 +391,7 @@ class Client
         return $cookie->getValue();
     }
 
+
     /**
      * Searches for a specific cookie in the current jar.
      *
@@ -937,16 +938,10 @@ class Client
                 'Accept-Encoding'  => Constants::ACCEPT_ENCODING,
                 'Accept-Language'  => $this->_parent->getAcceptLanguage(),
                 'X-IG-App-Startup-Country' => 'US',
-                'X-MID'            => $this->getMid()
+                'X-MID'                    => $this->getMid(),
+                'Host'                     => 'i.instagram.com'
             ],
         ];
-
-        $Host = $request->getHeader('Host');
-        if (!empty($Host)) {
-            $headers['set_headers']['Host'] = $Host;
-        } else {
-            $headers['set_headers']['Host'] = 'i.instagram.com';
-        }
 
         if ($this->_totalTime !== 0) {
             $headers['set_headers']['X-IG-Bandwidth-Speed-KBPS'] = ($this->_totalBytes / $this->_totalTime + $this->_bandwidthB / $this->_bandwidthM) / 2;

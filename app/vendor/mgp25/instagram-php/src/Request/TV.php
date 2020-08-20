@@ -43,7 +43,7 @@ class TV extends RequestCollection
     public function getNonPrefetchFeed(
         $maxId = null)
     {
-        $request = $this->ig->request('igtv/non_prefetch_browse_feed/');
+        $request = $this->ig->request('igtv/non_prefetch_browse_feed');
 
         if ($maxId !== null) {
             $request->addParam('max_id', $maxId);
@@ -116,7 +116,7 @@ class TV extends RequestCollection
     public function getBrowseFeed(
         $prefetch = false)
     {
-        $request = $this->ig->request('igtv/browse_feed/')
+        $request = $this->ig->request('igtv/browse_feed')
             ->addParam('prefetch', 1)
             ->addParam('banner_token', $this->ig->settings->get('banner_token'));
         if ($prefetch) {

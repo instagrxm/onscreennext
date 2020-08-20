@@ -2,7 +2,9 @@
 
 namespace InstagramAPI\Response;
 
-use InstagramAPI\Response;
+use InstagramAPI\AutoPropertyHandler;
+use InstagramAPI\ResponseInterface;
+use InstagramAPI\ResponseTrait;
 
 /**
  * @method mixed getAppData()
@@ -13,22 +15,17 @@ use InstagramAPI\Response;
  * @method bool isChecksum()
  * @method bool isConfig()
  * @method bool isError()
- * @method $this setAppData(mixed $value)
- * @method $this setChecksum(mixed $value)
- * @method $this setConfig(mixed $value)
- * @method $this setError(mixed $value)
- * @method $this unsetAppData()
- * @method $this unsetChecksum()
- * @method $this unsetConfig()
- * @method $this unsetError()
- * 
+ * @method setAppData(mixed $value)
+ * @method setChecksum(mixed $value)
+ * @method setConfig(mixed $value)
+ * @method setError(mixed $value)
  */
-class ClientEventLogsResponse extends Response
+class ClientEventLogsResponse extends AutoPropertyHandler implements ResponseInterface
 {
-    const JSON_PROPERTY_MAP = [
-        'checksum' => '',
-        'config'   => '',
-        'app_data' => '',
-        'error' => '',
-    ];
+    use ResponseTrait;
+
+    public $checksum;
+    public $config;
+    public $app_data;
+    public $error;
 }

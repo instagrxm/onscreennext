@@ -17,7 +17,6 @@ class UserAgent
      * @var string
      */
     const USER_AGENT_FORMAT = 'Instagram %s Android (%s/%s; %s; %s; %s; %s; %s; %s; %s; %s)';
-    const IOS_USER_AGENT_FORMAT = 'Instagram %s (%s; iOS %s; %s; %s; scale=%s; %s; %s) AppleWebKit/605.1.15';
 
     /**
      * Generates a User Agent string from a DeviceInterface.
@@ -53,30 +52,6 @@ class UserAgent
             $device->getCPU(),
             $userLocale, // Locale ("en_US").
             Constants::VERSION_CODE
-        );
-    }
-
-    /**
-     * Generates a User Agent string from a DeviceInterface.
-     *
-     * @param string $userLocale The user's locale, such as "en_US".
-     *
-     * @return string
-     */
-    public static function buildiOSUserAgent(
-        $userLocale)
-    {
-        // Generate the final User-Agent string.
-        return sprintf(
-            self::IOS_USER_AGENT_FORMAT,
-            Constants::IG_IOS_VERSION,
-            Constants::IOS_VERSION,
-            Constants::IOS_MODEL,
-            $userLocale,
-            $userLocale,
-            Constants::IOS_SCALE,
-            Constants::IOS_DPI,
-            Constants::IG_IOS_VERSION_CODE
         );
     }
 
