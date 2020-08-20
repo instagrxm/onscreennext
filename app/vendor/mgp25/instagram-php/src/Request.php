@@ -385,22 +385,31 @@ class Request
     protected function _addDefaultHeaders()
     {
         if ($this->_defaultHeaders) {
-            $this->_headers['X-IG-App-Locale'] = $this->_parent->getLocale();
-            $this->_headers['X-IG-Device-Locale'] = $this->_parent->getLocale();
-            $this->_headers['X-IG-Mapped-Locale'] = $this->_parent->getLocale();
             $this->_headers['X-IG-Connection-Type'] = Constants::X_IG_Connection_Type;
             $this->_headers['X-IG-Connection-Speed'] = $this->_parent->getConnectionSpeed();
             $this->_headers['X-IG-Device-ID'] = $this->_parent->uuid;
             $this->_headers['X-FB-HTTP-Engine'] = Constants::X_FB_HTTP_Engine;
-            $this->_headers['X-IG-Android-ID'] = $this->_parent->device_id;
-            $this->_headers['X-IG-App-ID'] = Constants::FACEBOOK_ANALYTICS_APPLICATION_ID;
-            $this->_headers['X-IG-Capabilities'] = Constants::X_IG_Capabilities;
-            $this->_headers['X-Bloks-Version-Id'] = Constants::BLOCK_VERSIONING_ID;
-            $this->_headers['X-IG-VP9-Capable'] = $this->_parent->getVP9Capable();
+
             if ($this->_parent->getIsEUUser() === true) {
                 $this->_headers['X-IG-EU-DC-ENABLED'] = 'true';
             }
-            $this->_headers['X-Bloks-Is-Layout-RTL'] = 'false';
+
+            if ($this->_parent->getPlatform() === 'android') {
+                $this->_headers['X-IG-App-Locale'] = $this->_parent->getLocale();
+                $this->_headers['X-IG-Device-Locale'] = $this->_parent->getLocale();
+                $this->_headers['X-IG-Mapped-Locale'] = $this->_parent->getLocale();
+                $this->_headers['X-IG-Android-ID'] = $this->_parent->device_id;
+                $this->_headers['X-IG-App-ID'] = Constants::FACEBOOK_ANALYTICS_APPLICATION_ID;
+                $this->_headers['X-IG-Capabilities'] = Constants::X_IG_Capabilities;
+                $this->_headers['X-Bloks-Version-Id'] = Constants::BLOCK_VERSIONING_ID;
+                $this->_headers['X-IG-VP9-Capable'] = $this->_parent->getVP9Capable();
+                $this->_headers['X-Bloks-Is-Layout-RTL'] = 'false';
+            } else {
+                $this->_headers['X-DEVICE-ID'] = $this->_parent->uuid;
+                $this->_headers['X-IG-App-ID'] = Constants::FACEBOOK_ORCA_APPLICATION_ID;
+                $this->_headers['X-IG-Capabilities'] = Constants::IOS_X_IG_Capabilities;
+                $this->_headers['X-Bloks-Version-Id'] = Constants::IOS_BLOCKS_VERSIONING_ID;
+            }
         }
 
         return $this;
@@ -663,7 +672,7 @@ class Request
         }
         // Sign POST data if needed.
         if ($this->_signedPost) {
-            $this->_posts = Signatures::signData($this->_posts, $this->_excludeSigned);
+            $this->_posts = Signatures::signData($this->_posts, $this->_excludeSigned, $this->_parent->getPlatform());
         }
         // Switch between multipart (at least one file) or urlencoded body.
         if (!count($this->_files)) {
@@ -696,7 +705,7 @@ class Request
         }
         // Check signed request params flag.
         if ($this->_signedGet) {
-            $this->_params = Signatures::signData($this->_params);
+            $this->_params = Signatures::signData($this->_params, [], $this->_parent->getPlatform());
         }
         // Generate the final endpoint URL, by adding any custom query params.
         if (count($this->_params)) {

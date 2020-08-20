@@ -317,7 +317,10 @@ class Story extends RequestCollection
      *
      * @see Story::getUserStoryFeed()
      */
-	public function getReelsMediaFeedWeb($feedList, $source = 'feed_timeline') {
+	public function getReelsMediaFeedWeb(
+        $feedList, 
+        $source = 'feed_timeline') 
+    {
         if (!is_array($feedList)) {
             $feedList = [$feedList];
         }
@@ -327,98 +330,79 @@ class Story extends RequestCollection
         }
         unset($value); // Clear reference.
 
-        $variables = [
-            "reel_ids" => $feedList,
-            "tag_names" => [],
-            "location_ids" => [],
-			"source" => $source,
-            "highlight_reel_ids" => [],
-            "precomposed_overlay" => false,
-            "show_story_viewer_list" => true,
-            "story_viewer_fetch_count" => 50,
-            "story_viewer_cursor" => "",
-            "stories_video_dash_manifest" => false
-			
-        ];
-
-        return $this->ig->request('https://www.instagram.com/graphql/query/')
+        return $this->ig->request("graphql/query/")
+            ->setVersion(5)
             ->setSignedPost(false)
-            ->addParam('variables', json_encode($variables))
             ->addParam('query_hash', '52a36e788a02a3c612742ed5146f1676')
-			
-			
+            ->addParam('variables', json_encode([
+                "reel_ids" => $feedList,
+                "tag_names" => [],
+                "location_ids" => [],
+                "source" => $source,
+                "highlight_reel_ids" => [],
+                "precomposed_overlay" => false,
+                "show_story_viewer_list" => true,
+                "story_viewer_fetch_count" => 50,
+                "story_viewer_cursor" => "",
+                "stories_video_dash_manifest" => false
+            ]))
             ->getResponse(new Response\GenericResponse());
     }
 
     /**
      * Mark story media item as seen with web API
      */
-    public function markMediaSeenGraph($reelMediaId, $reelMediaOwnerId, $reelMediaTakenAt)
-    {        
-        $csrftoken  = $this->ig->client->getToken();
-        $mid        = $this->ig->client->getCookie('csrftoken', 'i.instagram.com')->getValue();
-        $ds_user_id = $this->ig->client->getCookie('ds_user_id', 'i.instagram.com')->getValue();
-        $sessionid  = $this->ig->client->getCookie('sessionid', 'i.instagram.com')->getValue();
-        $urlgen     = $this->ig->client->getCookie('urlgen', 'i.instagram.com')->getValue();
-        $rur        = $this->ig->client->getCookie('rur', 'i.instagram.com')->getValue();
-        $proxy      = $this->ig->client->getProxy();
-
-        $curl = curl_init();
-
-        curl_setopt_array($curl, [
-            CURLOPT_URL            => "https://www.instagram.com/stories/reel/seen",
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING       => "",
-            CURLOPT_MAXREDIRS      => 10,
-            CURLOPT_TIMEOUT        => 0,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST  => "POST",
-            CURLOPT_POSTFIELDS     => [
-                'reelMediaId'      => $reelMediaId,
-                'reelMediaOwnerId' => $reelMediaOwnerId,
-                'reelId'           => $reelMediaOwnerId,
-                'reelMediaTakenAt' => $reelMediaTakenAt,
-                'viewSeenAt'       => $reelMediaTakenAt
-            ],
-            CURLOPT_HTTPHEADER     => [
-                "x-csrftoken: " . $csrftoken,
-                "Content-Type: multipart/form-data",
-                "Cookie: mid=".$mid."; ds_user_id=$ds_user_id; csrftoken=$csrftoken; sessionid=$sessionid; rur=$rur; urlgen=$urlgen"
-            ],
-        ]);
-        
-        if ($proxy) {
-            $proxyStruct  = explode('://', $proxy);
-            $httpS        = $proxyStruct[0] . "://";
-            $proxyStruct  = explode('@', $proxyStruct[1]);
-        
-            if (isset($proxyStruct[1])) {
-                $proxyAuth    = $proxyStruct[0];
-                $proxyAddress = $httpS . $proxyStruct[1];
-            } else {
-                $proxyAuth    = false;
-                $proxyAddress = $httpS . $proxyStruct[0];
-            }
-
-            curl_setopt($curl, CURLOPT_PROXY, $proxyAddress);
-
-            if ($proxyAuth) {
-                curl_setopt($curl, CURLOPT_PROXYUSERPWD, $proxyAuth);
-            }
+    public function markMediaSeenGraph(
+        $reelMediaId, 
+        $reelMediaOwnerId, 
+        $reelMediaTakenAt,
+        $rollout_hash)
+    {    
+        if ($reelMediaId == null) {
+            throw new \InvalidArgumentException('Empty $reelMediaId sent to markMediaSeenGraph() function.');
         }
 
-        $response = curl_exec($curl);
+        if ($reelMediaOwnerId == null) {
+            throw new \InvalidArgumentException('Empty $reelMediaOwnerId sent to markMediaSeenGraph() function.');
+        }
 
-        curl_close($curl);
+        if ($reelMediaTakenAt == null) {
+            throw new \InvalidArgumentException('Empty $reelMediaTakenAt sent to markMediaSeenGraph() function.');
+        }
 
-        return $response;
+        if ($rollout_hash == null) {
+            throw new \InvalidArgumentException('Empty $rollout_hash sent to markMediaSeenGraph() function.');
+        }
+
+        $request = $this->ig->request("https://www.instagram.com/stories/reel/seen")
+            ->setAddDefaultHeaders(false)
+            ->setSignedPost(false)
+            ->setIsBodyCompressed(false)
+            ->addHeader('X-CSRFToken', $this->ig->client->getToken())
+            ->addHeader('Referer', 'https://www.instagram.com/')
+            ->addHeader('Host', 'www.instagram.com')
+            ->addHeader('X-Requested-With', 'XMLHttpRequest')
+            ->addHeader('X-Instagram-AJAX', $rollout_hash)
+            ->addHeader('X-IG-App-ID', Constants::IG_WEB_APPLICATION_ID)
+            ->addHeader('X-IG-WWW-Claim', Constants::X_IG_WWW_CLAIM);
+            if ($this->ig->getIsAndroid()) {
+                $request->addHeader('User-Agent', sprintf('Mozilla/5.0 (Linux; Android %s; Google) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Mobile Safari/537.36', $this->ig->device->getAndroidRelease()));
+            } else {
+                $request->addHeader('User-Agent', 'Mozilla/5.0 (iPhone; CPU iPhone OS ' . Constants::IOS_VERSION . ' like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.4 Mobile/15E148 Safari/604.1');
+            }
+            $request->addPost('reelMediaId', $reelMediaId)
+                    ->addPost('reelMediaOwnerId', $reelMediaOwnerId)
+                    ->addPost('reelId', $reelMediaOwnerId)
+                    ->addPost('reelMediaTakenAt', $reelMediaTakenAt)
+                    ->addPost('viewSeenAt', $reelMediaTakenAt);
+
+        return $request->getResponse(new Response\GenericResponse());
     }
 
     /**
      * Mark story media item as seen with web API (v2, just name changed for compatibility with some scripts)
      */
-     public function markMediaSeenWeb($reelMediaId, $reelMediaOwnerId, $reelMediaTakenAt) {
+    public function markMediaSeenWeb($reelMediaId, $reelMediaOwnerId, $reelMediaTakenAt) {
         $csrftoken  = $this->ig->client->getToken();
         $mid        = $this->ig->client->getMid();
         $ds_user_id = $this->ig->client->getDSUserId();
@@ -426,7 +410,7 @@ class Story extends RequestCollection
         $urlgen     = $this->ig->client->getURLGen();
         $rur        = $this->ig->client->getRUR();
         $proxy      = $this->ig->client->getProxy();
-        $useragent = 'Instagram 144.0.0 (iPad4; iPhone OS 13_3_1; en_RO; en-RO; scale=2.00; gamut=normal; 640x960) AppleWebKit/420+';
+
         $curl = curl_init();
 
         curl_setopt_array($curl, [
@@ -435,6 +419,7 @@ class Story extends RequestCollection
             CURLOPT_ENCODING       => "",
             CURLOPT_MAXREDIRS      => 10,
             CURLOPT_TIMEOUT        => 0,
+            CURLOPT_USERAGENT      => "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36",
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST  => "POST",
@@ -446,20 +431,32 @@ class Story extends RequestCollection
                 'viewSeenAt'       => $reelMediaTakenAt
             ],
             CURLOPT_HTTPHEADER     => [
+                "referrer: https://www.instagram.com/",
+                "x-ig-app-id: 936619743392459",
+                "x-instagram-ajax: f9e28d162740",
+                "sec-fetch-site: same-origin",
+                "sec-fetch-mode: cors",
+                "sec-fetch-dest: empty",
+                "accept: */*",
+                "accept-encoding: gzip, deflate, br",
+                "x-ig-www-claim: hmac.AR3VWu1WbtgZTYm1LI-JdffO71nek5ezN2CM-bQ6iN6n1Dka",
+                "x-requested-with: XMLHttpRequest",
                 "x-csrftoken: " . $csrftoken,
-                "Content-Type: multipart/form-data",
-                "Cookie: mid=".$mid."; ds_user_id=$ds_user_id; user-agent=$useragent; csrftoken=$csrftoken; sessionid=$sessionid; rur=$rur; urlgen=$urlgen"
+                "Content-Type: application/x-www-form-urlencoded",
+                "Cookie: mid=".$mid."; ds_user_id=$ds_user_id; csrftoken=$csrftoken; sessionid=$sessionid; rur=$rur; urlgen=$urlgen"
             ],
         ]);
         
         if ($proxy) {
             $parts = parse_url($proxy);
     
-            var_dump($parts);
-    
-            if (!$parts || !isset($parts['scheme'], $parts['host']) || ($parts['scheme'] !== 'http' && $parts['scheme'] !== 'https')) {
-                throw new InvalidArgumentException('Invalid proxy URL "' . $proxy . '"');
+            if (!$parts || !isset($parts['host'])) {
+                throw new \InvalidArgumentException('Invalid proxy URL "' . $proxy . '"'); 
             }
+                    
+            if (!isset($parts['scheme']) || ($parts['scheme'] !== 'http' && $parts['scheme'] !== 'https')) { 
+				$parts['scheme'] = 'http';
+			}
         
             if (isset($parts['user'])) {
                 $proxyAuth = $parts['user'] . ':' . $parts['pass'];
@@ -631,8 +628,8 @@ class Story extends RequestCollection
         return $this->ig->request("media/{$storyId}/{$pollId}/story_poll_vote/")
             ->addPost('_uuid', $this->ig->uuid)
             ->addPost('_uid', $this->ig->account_id)
-			
             ->addPost('_csrftoken', $this->ig->client->getToken())
+            ->addPost('radio_type', $this->ig->radio_type)
             ->addPost('vote', $votingOption)
             ->getResponse(new Response\ReelMediaViewerResponse());
     }
@@ -663,9 +660,9 @@ class Story extends RequestCollection
 
         return $this->ig->request("media/{$storyId}/{$sliderId}/story_slider_vote/")
             ->addPost('_uuid', $this->ig->uuid)
-			
             ->addPost('_uid', $this->ig->account_id)
             ->addPost('_csrftoken', $this->ig->client->getToken())
+            ->addPost('radio_type', $this->ig->radio_type)
             ->addPost('vote', $votingOption)
             ->getResponse(new Response\ReelMediaViewerResponse());
     }
@@ -758,7 +755,6 @@ class Story extends RequestCollection
             ->addPost('_csrftoken', $this->ig->client->getToken())
             ->addPost('response', $responseText)
             ->addPost('_uid', $this->ig->account_id)
-			
             ->addPost('type', 'text')
             ->addPost('_uuid', $this->ig->uuid)
             ->getResponse(new Response\GenericResponse());

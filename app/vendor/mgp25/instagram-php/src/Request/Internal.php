@@ -1128,9 +1128,12 @@ class Internal extends RequestCollection
     {
         $request = $this->ig->request('qe/sync/')
             ->addHeader('X-DEVICE-ID', $this->ig->uuid)
-            ->addPost('id', $this->ig->uuid)
-            ->addPost('experiments', Constants::LOGIN_EXPERIMENTS)
-            ->addPost('server_config_retrieval', '1');
+            ->addPost('id', $this->ig->uuid);
+        if ($this->ig->getIsAndroid()) {
+            $request->addPost('experiments', Constants::LOGIN_EXPERIMENTS);
+        } else {
+            $request->addPost('server_config_retrieval', 1);
+        }
         if ($useCsrfToken) {
             $request->addPost('_csrftoken', $this->ig->client->getToken());
         }
@@ -1159,9 +1162,12 @@ class Internal extends RequestCollection
             ->addPost('_uuid', $this->ig->uuid)
             ->addPost('_uid', $this->ig->account_id)
             ->addPost('_csrftoken', $this->ig->client->getToken())
-            ->addPost('id', $this->ig->account_id)
-            ->addPost('experiments', Constants::EXPERIMENTS)
-            ->addPost('server_config_retrieval', '1');
+            ->addPost('id', $this->ig->account_id);
+        if ($this->ig->getIsAndroid()) {
+            $request->addPost('experiments', Constants::EXPERIMENTS);
+        } else {
+            $request->addPost('server_config_retrieval', 1);
+        }
 
         $result = $request->getResponse(new Response\SyncResponse());
 
@@ -1190,10 +1196,12 @@ class Internal extends RequestCollection
         $loginConfigs = false)
     {
         $request = $this->ig->request('launcher/sync/')
-            ->addPost('id', ($idIsUuid ? $this->ig->uuid : $this->ig->account_id))
-            ->addPost('configs', $loginConfigs ? Constants::LAUNCHER_LOGIN_CONFIGS : Constants::LAUNCHER_CONFIGS)
-            ->addPost('server_config_retrieval', '1');
-
+            ->addPost('id', ($idIsUuid ? $this->ig->uuid : $this->ig->account_id));
+        if ($this->ig->getIsAndroid()) {
+            $request->addPost('configs', $loginConfigs ? Constants::LAUNCHER_LOGIN_CONFIGS : Constants::LAUNCHER_CONFIGS);
+        } else {
+            $request->addPost('server_config_retrieval', 1);
+        }
         if ($useCsrfToken) {
             $request->addPost('_csrftoken', $this->ig->client->getToken());
         }

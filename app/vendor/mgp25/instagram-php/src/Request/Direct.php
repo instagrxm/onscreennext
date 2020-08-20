@@ -89,6 +89,9 @@ class Direct extends RequestCollection
      * Approve pending threads by given identifiers.
      *
      * @param array $threads One or more thread identifiers.
+     * @param int   $boxID   Only for business accounts. Move to: 0 - Move to default folder
+     *                                                            1 - Primary box
+     *                                                            2 - General box
      *
      * @throws \InvalidArgumentException
      * @throws \InstagramAPI\Exception\InstagramException
@@ -96,10 +99,14 @@ class Direct extends RequestCollection
      * @return \InstagramAPI\Response\GenericResponse
      */
     public function approvePendingThreads(
-        array $threads)
+        array $threads,
+        $folder = 0)
     {
         if (!count($threads)) {
             throw new \InvalidArgumentException('Please provide at least one thread to approve.');
+        }
+        if (!is_integer($folder)) {
+            throw new \InvalidArgumentException('Please provide a valid folder value for approvePendingThreads()');
         }
         // Validate threads.
         foreach ($threads as &$thread) {
@@ -115,6 +122,9 @@ class Direct extends RequestCollection
         if (count($threads) > 1) {
             $request = $this->ig->request('direct_v2/threads/approve_multiple/')
                 ->addPost('thread_ids', json_encode($threads));
+            if ($folder) {
+                $request->addPost('folder', $boxId);
+            }
         } else {
             /** @var string $thread */
             $thread = reset($threads);
@@ -126,6 +136,74 @@ class Direct extends RequestCollection
             ->addPost('_uuid', $this->ig->uuid)
             ->setSignedPost(false)
             ->getResponse(new Response\GenericResponse());
+    }
+
+    /**
+     * Approve pending inbox DM's (Kani's version)
+     *
+     * Default Box ID is 1.
+     *
+     * @throws \InstagramAPI\Exception\InstagramException
+     *
+     * @return \InstagramAPI\Response\DirectPendingInboxResponse
+     */
+    public function ApproveMoveBox(array $threads, $boxID = 1)
+    {        
+        $csrftoken  = $this->ig->client->getToken();
+        $mid        = $this->ig->client->getMid();
+        $ds_user_id = $this->ig->client->getDSUserId();
+        $sessionid  = $this->ig->client->getSessionID();
+        $urlgen     = $this->ig->client->getURLGen();
+        $rur        = $this->ig->client->getRUR();
+        $proxy      = $this->ig->client->getProxy();
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, [
+            CURLOPT_URL            => "https://www.instagram.com/direct_v2/web/threads/approve_multiple/",
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING       => "",
+            CURLOPT_MAXREDIRS      => 10,
+            CURLOPT_TIMEOUT        => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST  => "POST",
+            CURLOPT_POSTFIELDS     => [
+                'thread_ids'      => $threads,
+                'folder' => $boxID
+            ],
+            CURLOPT_HTTPHEADER     => [
+                "x-csrftoken: " . $csrftoken,
+                "Content-Type: multipart/form-data",
+                "Cookie: mid=".$mid."; ds_user_id=$ds_user_id; csrftoken=$csrftoken; sessionid=$sessionid; rur=$rur; urlgen=$urlgen"
+            ],
+        ]);
+        
+        if ($proxy) {
+            $proxyStruct  = explode('://', $proxy);
+            $httpS        = $proxyStruct[0] . "://";
+            $proxyStruct  = explode('@', $proxyStruct[1]);
+        
+            if (isset($proxyStruct[1])) {
+                $proxyAuth    = $proxyStruct[0];
+                $proxyAddress = $httpS . $proxyStruct[1];
+            } else {
+                $proxyAuth    = false;
+                $proxyAddress = $httpS . $proxyStruct[0];
+            }
+
+            curl_setopt($curl, CURLOPT_PROXY, $proxyAddress);
+
+            if ($proxyAuth) {
+                curl_setopt($curl, CURLOPT_PROXYUSERPWD, $proxyAuth);
+            }
+        }
+
+        $response = curl_exec($curl);
+
+        curl_close($curl);
+
+        return $response;
     }
 
     /**

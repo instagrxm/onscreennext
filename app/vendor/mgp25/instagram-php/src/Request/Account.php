@@ -6,6 +6,10 @@ use InstagramAPI\Exception\InternalException;
 use InstagramAPI\Exception\SettingsException;
 use InstagramAPI\Constants;
 use InstagramAPI\Response;
+use InstagramAPI\Request\Metadata\Internal as InternalMetadata;
+use InstagramAPI\Signatures;
+use InstagramAPI\Utils;
+
 
 /**
  * Account-related functions, such as profile editing and security.
@@ -109,7 +113,6 @@ class Account extends RequestCollection
      * @param string      $name          Full name. Use "" for nothing.
      * @param string      $biography     Biography text. Use "" for nothing.
      * @param string      $email         Email. Required!
-     * @param string      $photoFilename Photo filename to upload and set as profile picture.
      * @param string|null $newUsername   (optional) Rename your account to a new username,
      *                                   which you've already verified with checkUsername().
      *
@@ -126,7 +129,6 @@ class Account extends RequestCollection
         $name,
         $biography,
         $email,
-        $photoFilename = null,
         $newUsername = null)
     {
         // We must mark the profile for editing before doing the main request.
@@ -146,18 +148,6 @@ class Account extends RequestCollection
                   ? $newUsername
                   : $oldUsername; // Keep current name.
 
-        if ($photoFilename === null) {
-            $temp = tmpfile();
-            fwrite($temp, file_get_contents($this->getAnonymousProfilePicture()->getUrl()));
-            $photoFilename = stream_get_meta_data($temp)['uri'];
-        }
-
-        $internalMetadata = new InternalMetadata(Utils::generateUploadId(true));
-        $internalMetadata->setPhotoDetails(Constants::FEED_TIMELINE, $photoFilename);
-        $uploadResponse = $this->ig->internal->uploadPhotoData(Constants::FEED_TIMELINE, $internalMetadata);
-
-        fclose($temp);
-
         return $this->ig->request('accounts/edit_profile/')
             ->addPost('_uuid', $this->ig->uuid)
             ->addPost('_uid', $this->ig->account_id)
@@ -169,7 +159,51 @@ class Account extends RequestCollection
             ->addPost('biography', $biography)
             ->addPost('email', $email)
             ->addPost('device_id', $this->ig->device_id)
+            ->getResponse(new Response\UserInfoResponse());
+    }
+
+    /**
+     * Changes your account's profile picture.
+     *
+     * @param string $photoFilename the photo filename with path
+     *
+     * @throws \InvalidArgumentException
+     * @throws \InstagramAPI\Exception\InstagramException
+     *
+     * @return \InstagramAPI\Response\UserInfoResponse
+     */
+    public function changeProfilePicture(
+        $photoFilename)
+    {
+        if (!$photoFilename) {
+            throw new \InvalidArgumentException("Empty photo filename with path sent to changeProfilePicture() function.");
+        }
+
+        $internalMetadata = new InternalMetadata(Utils::generateUploadId(true));
+        $internalMetadata->setPhotoDetails(Constants::FEED_TIMELINE, $photoFilename);
+        $uploadResponse = $this->ig->internal->uploadPhotoData(Constants::FEED_TIMELINE, $internalMetadata);
+
+        return $this->ig->request('accounts/change_profile_picture/')
+            ->addPost('_csrftoken', $this->ig->client->getToken())
+            ->addPost('_uuid', $this->ig->uuid)
+            ->addPost('use_fbuploader', true)
             ->addPost('upload_id', $internalMetadata->getUploadId())
+            ->getResponse(new Response\UserInfoResponse());
+    }
+
+    /**
+     * Remove your account's profile picture.
+     *
+     * @throws \InstagramAPI\Exception\InstagramException
+     *
+     * @return \InstagramAPI\Response\UserInfoResponse
+     */
+    public function removeProfilePicture()
+    {
+        return $this->ig->request('accounts/remove_profile_picture/')
+            ->addPost('_uuid', $this->ig->uuid)
+            ->addPost('_uid', $this->ig->account_id)
+            ->addPost('_csrftoken', $this->ig->client->getToken())
             ->getResponse(new Response\UserInfoResponse());
     }
 
@@ -184,22 +218,6 @@ class Account extends RequestCollection
     {
         return $this->ig->request('accounts/anonymous_profile_picture/')
             ->getResponse(new Response\AnonymousProfilePictureResponse());
-    }
-
-    /**
-     * Remove your account's profile picture. (Deprecated?)
-     *
-     * @throws \InstagramAPI\Exception\InstagramException
-     *
-     * @return \InstagramAPI\Response\UserInfoResponse
-     */
-    public function removeProfilePicture()
-    {
-        return $this->ig->request('accounts/remove_profile_picture/')
-            ->addPost('_uuid', $this->ig->uuid)
-            ->addPost('_uid', $this->ig->account_id)
-            ->addPost('_csrftoken', $this->ig->client->getToken())
-            ->getResponse(new Response\UserInfoResponse());
     }
 
     /**
@@ -626,7 +644,7 @@ class Account extends RequestCollection
     public function enableTwoFactorSMS(
         $phoneNumber,
         $verificationCode,
-        $trustDevice = false)
+        $trustDevice = true)
     {
         $cleanNumber = '+'.preg_replace('/[^0-9]/', '', $phoneNumber);
 

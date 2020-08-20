@@ -32,7 +32,7 @@ class PhotoDetails extends MediaDetails
      *
      * @var int
      */
-    const MAX_WIDTH = 1080;
+    const MAX_WIDTH = 1920;
 
     /**
      * Default orientation to use if no EXIF JPG orientation exists.

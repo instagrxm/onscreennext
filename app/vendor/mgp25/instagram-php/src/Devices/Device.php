@@ -101,6 +101,7 @@ class Device implements DeviceInterface
      *                                  to construct from. If NULL or not a good
      *                                  device, we'll use a random good device.
      * @param bool        $autoFallback (optional) Toggle automatic fallback.
+     * @param string      $platform     Platform used for requests.
      *
      * @throws \RuntimeException If fallback is disabled and device is invalid.
      */
@@ -109,19 +110,20 @@ class Device implements DeviceInterface
         $versionCode,
         $userLocale,
         $deviceString = null,
-        $autoFallback = true)
+        $autoFallback = true,
+        $platform = 'android')
     {
         $this->_appVersion = $appVersion;
         $this->_versionCode = $versionCode;
         $this->_userLocale = $userLocale;
 
         // Use the provided device if a valid good device. Otherwise use random.
-        if ($autoFallback && (!is_string($deviceString) || !GoodDevices::isGoodDevice($deviceString))) {
+        if ($autoFallback && (!is_string($deviceString) || !GoodDevices::isGoodDevice($deviceString)) && $platform !== 'ios') {
             $deviceString = GoodDevices::getRandomGoodDevice();
         }
 
         // Initialize ourselves from the device string.
-        $this->_initFromDeviceString($deviceString);
+        $this->_initFromDeviceString($deviceString, $platform);
     }
 
     /**
@@ -130,12 +132,23 @@ class Device implements DeviceInterface
      * Does no validation to make sure the string is one of the good devices.
      *
      * @param string $deviceString
+     * @param string $platform     Platform used for requests.
      *
      * @throws \RuntimeException If the device string is invalid.
      */
     protected function _initFromDeviceString(
-        $deviceString)
+        $deviceString,
+        $platform)
     {
+        if ($platform === 'ios') {
+            // Build our user agent.
+            $this->_userAgent = UserAgent::buildiOSUserAgent($this->_userLocale);
+            $this->_fbUserAgents = [];
+            $this->_deviceString = $platform;
+
+            return;
+        }
+
         if (!is_string($deviceString) || empty($deviceString)) {
             throw new \RuntimeException('Device string is empty.');
         }
