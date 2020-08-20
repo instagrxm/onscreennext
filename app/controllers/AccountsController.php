@@ -130,3 +130,4 @@ public function reconnect()
    $this->resp->result = 1;  
    $this->jsonecho();
 } 
+}
