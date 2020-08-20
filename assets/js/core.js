@@ -244,7 +244,6 @@ NextPost.DisplayFormResult = function($form, type, msg)
     });
 }
 
-
 /**
  * Ajax forms
  */
@@ -273,7 +272,10 @@ NextPost.AjaxForms = function()
                 url: $form.attr("action"),
                 type: $form.attr("method"),
                 dataType: 'jsonp',
-                data: $form.serialize(),
+                data: new FormData($form[0]),
+                processData: false,
+                contentType: false,
+                
                 error: function() {
                     $("body").removeClass("onprogress");
                     NextPost.DisplayFormResult($form, "error", __("Oops! An error occured. Please try again later!"));
@@ -315,7 +317,6 @@ NextPost.AjaxForms = function()
         return false;
     });
 }
-
 
 
 /**
@@ -1326,12 +1327,12 @@ NextPost.Account = function()
 
         if (!rx_new.test(settings.url) && !rx_edit.test(settings.url)) {
             return;
-        }
+        } 
 
         if (xhr.responseJSON.hasOwnProperty("changes_saved") &&
             xhr.responseJSON.changes_saved) {
             // account (not new) saved successfully
-            $form.find(".js-challenge, .js-2fa").addClass("none");
+            $form.find(".js-challenge, .js-2fa, .js-browser-extension").addClass("none");
 
             $form.find(":input[name='password']").val("");
             $form.find(".js-login").removeClass("none");
@@ -1343,7 +1344,7 @@ NextPost.Account = function()
         if (xhr.responseJSON.hasOwnProperty("login_failed") &&
             xhr.responseJSON.login_failed) {
             // Unable to login
-            $form.find(".js-challenge, .js-2fa").addClass("none");
+            $form.find(".js-challenge, .js-2fa, .js-browser-extension").addClass("none");
 
             $form.find(":input[name='password']").val("");
             $form.find(".js-login").removeClass("none");
@@ -1368,6 +1369,11 @@ NextPost.Account = function()
             verification_type = "challenge";
         }
 
+        if (xhr.responseJSON.hasOwnProperty("browser_extension") &&
+            xhr.responseJSON.browser_extension) {
+            verification_type = "browser-extension";
+        }
+
         if (!verification_type) {
             return;
         }
@@ -1375,26 +1381,57 @@ NextPost.Account = function()
         // Clear timeout for form result timer
         if (__form_result_timer) {
             clearTimeout(__form_result_timer);
-        }
+        }	
 
         $form.find(".form-result .icon").attr("class", "sli sli-lock icon");
-        $form.find(".js-login, .js-challenge, .js-2fa").addClass("none");
-        $form.find(".js-login, .js-challenge, .js-2fa").find(":input").prop("disabled", true);
+        $form.find(".js-login, .js-challenge, .js-2fa, .js-browser-extension").addClass("none");
+        $form.find(".js-login, .js-challenge, .js-2fa, .js-browser-extension").find(":input").prop("disabled", true);
 
         if (verification_type == "2fa") {
             // Update login form state to 2FA
             $form.find(":input[name='action']").val("2fa");
 
-            $form.find(":input[name='2faid']").val(xhr.responseJSON.identifier)
-            $form.find(".js-2fa").removeClass("none")
+            $form.find(":input[name='2faid']").val(xhr.responseJSON.identifier);
+            $form.find(".js-2fa").removeClass("none");
+
+            if (xhr.responseJSON.verification_method == "3") {
+                $form.find(".js-not-received-security-code").addClass("none");
+            }
+
             $form.find(".js-2fa :input").prop("disabled", false);
+        } else if (verification_type == "browser-extension") {
+            // Update login form state to Cookie Attachment
+            $form.find(".form-result .icon").attr("class", "sli sli-doc icon");
+            $form.find(":input[name='action']").val("browser-extension");
+            $form.find(":input[name='iacid']").val(xhr.responseJSON.internal_account_id);
+            $form.find(".js-browser-extension").removeClass("none");
+            $form.find(".cookie-file-extension").show();
+            $form.find(".js-browser-extension :input").prop("disabled", false);
+
+            var inputs = $form.find(".inputfile-session");
+
+            Array.prototype.forEach.call(inputs, function(input){
+                var label	 = input.nextElementSibling,
+                    labelVal = label.innerHTML;
+                input.addEventListener('change', function(e){
+                    var fileName = '';
+                    if  ( this.files && this.files.length == 1 ) {
+                        fileName = e.target.value.split( '\\' ).pop();
+                        if (fileName) {
+                            label.innerHTML = "<span class='selected'>" + fileName + "</span><span class='mdi mdi-folder field-icon--right selected'></span>";
+                        }
+                    } else {
+                        label.innerHTML = labelVal;
+                    }
+                });
+            });
         } else {
             // Update login form state to challenge
             $form.find(":input[name='action']").val("challenge");
 
-            $form.find(":input[name='challengeid']").val(xhr.responseJSON.identifier)
-            $form.find(".js-challenge").removeClass("none")
-            $form.find(".js-challenge :input").prop("disabled", false);
+            $form.find(":input[name='challengeid']").val(xhr.responseJSON.identifier);
+            $form.find(".js-challenge").removeClass("none");
+            $form.find(".js-challenge :input").prop("disabled", false);              
         }
         _resendtimer();
     });
@@ -1498,6 +1535,34 @@ NextPost.Account = function()
             }
         }, 1000);
     }
+
+    // Instagram session section
+    $form.find(":input[name='instagram-session']").on("change", function() {
+        $igs_fields = $form.find(".instagram-s");
+        $igs_fields.find(".instagram-session-tips").toggle();
+        $igs_fields.find(".cookie-file").toggle();
+        $igs_fields.find(".settings-file").toggle();
+
+        var inputs = $form.find(".inputfile-session");
+
+        Array.prototype.forEach.call(inputs, function(input){
+
+            var label	 = input.nextElementSibling,
+                labelVal = label.innerHTML;
+
+            input.addEventListener('change', function(e){
+                var fileName = '';
+                if  ( this.files && this.files.length == 1 ) {
+                    fileName = e.target.value.split( '\\' ).pop();
+                    if (fileName) {
+                        label.innerHTML = "<span class='selected'>" + fileName + "</span><span class='mdi mdi-folder field-icon--right selected'></span>";
+                    }
+                } else {
+                    label.innerHTML = labelVal;
+                }
+            });
+        });
+    });
 }
 
 

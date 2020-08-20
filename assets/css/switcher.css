@@ -1,0 +1,598 @@
+/**
+ * IMPORTANT
+ * 
+ * iOS Switcher uses Bootstrap grid (http://getbootstrap.com/css/#grid)
+ */
+
+ .form-switcher-ios.form-switcher-ios-md-phone.form-switcher-ios-sm-phone.dark-side-switcher {
+  margin-top: 17px;
+}
+
+span.mdi.mdi-weather-night.icon.dark-side-switcher {
+  display: block;
+  margin-top: 17px;
+  color: #dadada;
+  -webkit-transition: all ease 0.2s;
+  -moz-transition: all ease 0.2s;
+  transition: all ease 0.2s;
+}
+
+.item.dark-side-switcher-icon {
+  padding-right: 0;
+}
+
+.item.dark-side-switcher {
+  padding-left: 2px;
+}
+
+@media (max-width: 767px) {
+  .item.dark-side-switcher,
+  .item.dark-side-switcher-icon {
+    display: block;
+  }
+}
+
+.darkside span.mdi.mdi-weather-night.icon.dark-side-switcher {
+  color: #f8c900;
+  -webkit-transition: all ease 0.2s;
+  -moz-transition: all ease 0.2s;
+  transition: all ease 0.2s;
+}
+
+.form-switcher-ios input[type="checkbox"]:checked + .dark-side-switcher { 
+  border-color: #f6c700 !important;
+  -moz-box-shadow: 0px 0px 0px 12.5px #16b85f inset !important;
+  -webkit-box-shadow: 0px 0px 0px 12.5px #f8c900 inset !important;
+  box-shadow: 0px 0px 0px 12.5px #f7c800 inset !important;
+}
+
+/* line 21, ../sass/switcher.scss */
+.form-switcher-ios input[type="checkbox"] {
+  display: none;
+}
+/* line 23, ../sass/switcher.scss */
+.form-switcher-ios input[type="checkbox"]:disabled + .switcher {
+  opacity: 0.6;
+  cursor: not-allowed;
+  -moz-box-shadow: 0px 0px 0px transparent !important;
+  -webkit-box-shadow: 0px 0px 0px transparent !important;
+  box-shadow: 0px 0px 0px transparent !important;
+}
+/* line 28, ../sass/switcher.scss */
+.form-switcher-ios input[type="checkbox"]:checked:disabled + .switcher {
+  border-color: #cccccc !important;
+  -moz-box-shadow: 0px 0px 0px 15px #cccccc inset !important;
+  -webkit-box-shadow: 0px 0px 0px 15px #cccccc inset !important;
+  box-shadow: 0px 0px 0px 15px #cccccc inset !important;
+}
+/* line 32, ../sass/switcher.scss */
+.form-switcher-ios input[type="checkbox"]:checked + .switcher {
+  -moz-transition: box-shadow 0.2s ease-out, border-color 0.2s ease-out 0.02s;
+  -o-transition: box-shadow 0.2s ease-out, border-color 0.2s ease-out 0.02s;
+  -webkit-transition: box-shadow 0.2s ease-out, border-color 0.2s ease-out;
+  -webkit-transition-delay: 0s, 0.02s;
+  transition: box-shadow 0.2s ease-out, border-color 0.2s ease-out 0.02s;
+}
+/* line 36, ../sass/switcher.scss */
+.form-switcher-ios .switcher {
+  background: #ffffff;
+  border: 2px solid #e6e6e6;
+  padding: 0;
+  position: relative;
+  display: block;
+  cursor: pointer;
+  -moz-border-radius: 100px;
+  -webkit-border-radius: 100px;
+  border-radius: 100px;
+  -moz-transition: box-shadow 0.2s ease-out 0.02s, border-color 0.2s ease-out;
+  -o-transition: box-shadow 0.2s ease-out 0.02s, border-color 0.2s ease-out;
+  -webkit-transition: box-shadow 0.2s ease-out, border-color 0.2s ease-out;
+  -webkit-transition-delay: 0.02s, 0s;
+  transition: box-shadow 0.2s ease-out 0.02s, border-color 0.2s ease-out;
+}
+/* line 45, ../sass/switcher.scss */
+.form-switcher-ios .switcher:after {
+  background: #ffffff;
+  position: absolute;
+  top: 0;
+  left: 0;
+  content: "";
+  -moz-transform: translateX(0);
+  -ms-transform: translateX(0);
+  -webkit-transform: translateX(0);
+  transform: translateX(0);
+  -moz-transition: all 0.2s ease-out;
+  -o-transition: all 0.2s ease-out;
+  -webkit-transition: all 0.2s ease-out;
+  transition: all 0.2s ease-out;
+  -moz-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  -moz-border-radius: 100px;
+  -webkit-border-radius: 100px;
+  border-radius: 100px;
+}
+/* line 9, ../sass/_switcher-mixin.scss */
+.form-switcher-ios .switcher {
+  width: 43px;
+  height: 21px;
+}
+/* line 12, ../sass/_switcher-mixin.scss */
+.form-switcher-ios .switcher:hover:active {
+  -moz-box-shadow: 0px 0px 0px 13px #e6e6e6 inset;
+  -webkit-box-shadow: 0px 0px 0px 13px #e6e6e6 inset;
+  box-shadow: 0px 0px 0px 13px #e6e6e6 inset;
+}
+/* line 14, ../sass/_switcher-mixin.scss */
+.form-switcher-ios .switcher:hover:active:after {
+  width: 28.35px !important;
+}
+/* line 18, ../sass/_switcher-mixin.scss */
+.form-switcher-ios .switcher:after {
+  height: 21px;
+  width: 21px;
+}
+/* line 25, ../sass/_switcher-mixin.scss */
+.form-switcher-ios input[type="checkbox"]:disabled + .switcher:after {
+  height: 21px !important;
+  width: 21px !important;
+}
+/* line 31, ../sass/_switcher-mixin.scss */
+.form-switcher-ios input[type="checkbox"]:disabled:checked + .switcher:after {
+  -moz-transform: translateX(18px) !important;
+  -ms-transform: translateX(18px) !important;
+  -webkit-transform: translateX(18px) !important;
+  transform: translateX(18px) !important;
+}
+/* line 35, ../sass/_switcher-mixin.scss */
+.form-switcher-ios input[type="checkbox"]:checked + .switcher {
+  border-color: #16b85f;
+  -moz-box-shadow: 0px 0px 0px 12.5px #16b85f inset;
+  -webkit-box-shadow: 0px 0px 0px 12.5px #16b85f inset;
+  box-shadow: 0px 0px 0px 12.5px #16b85f inset;
+}
+/* line 38, ../sass/_switcher-mixin.scss */
+.form-switcher-ios input[type="checkbox"]:checked + .switcher:after {
+  -moz-transform: translateX(22px);
+  -ms-transform: translateX(22px);
+  -webkit-transform: translateX(22px);
+  transform: translateX(22px);
+}
+/* line 42, ../sass/_switcher-mixin.scss */
+.form-switcher-ios input[type="checkbox"]:checked + .switcher:hover:active:after {
+  -moz-transform: translateX(10.65px);
+  -ms-transform: translateX(10.65px);
+  -webkit-transform: translateX(10.65px);
+  transform: translateX(10.65px);
+}
+/* line 9, ../sass/_switcher-mixin.scss */
+.form-switcher-ios.form-switcher-ios-sm .switcher {
+  width: 31px;
+  height: 18px;
+}
+/* line 12, ../sass/_switcher-mixin.scss */
+.form-switcher-ios.form-switcher-ios-sm .switcher:hover:active {
+  -moz-box-shadow: 0px 0px 0px 13px #e6e6e6 inset;
+  -webkit-box-shadow: 0px 0px 0px 13px #e6e6e6 inset;
+  box-shadow: 0px 0px 0px 13px #e6e6e6 inset;
+}
+/* line 14, ../sass/_switcher-mixin.scss */
+.form-switcher-ios.form-switcher-ios-sm .switcher:hover:active:after {
+  width: 18.9px !important;
+}
+/* line 18, ../sass/_switcher-mixin.scss */
+.form-switcher-ios.form-switcher-ios-sm .switcher:after {
+  height: 14px;
+  width: 14px;
+}
+/* line 25, ../sass/_switcher-mixin.scss */
+.form-switcher-ios.form-switcher-ios-sm input[type="checkbox"]:disabled + .switcher:after {
+  height: 14px !important;
+  width: 14px !important;
+}
+/* line 31, ../sass/_switcher-mixin.scss */
+.form-switcher-ios.form-switcher-ios-sm input[type="checkbox"]:disabled:checked + .switcher:after {
+  -moz-transform: translateX(13px) !important;
+  -ms-transform: translateX(13px) !important;
+  -webkit-transform: translateX(13px) !important;
+  transform: translateX(13px) !important;
+}
+/* line 35, ../sass/_switcher-mixin.scss */
+.form-switcher-ios.form-switcher-ios-sm input[type="checkbox"]:checked + .switcher {
+  border-color: #16b85f;
+  -moz-box-shadow: 0px 0px 0px 9px #16b85f inset;
+  -webkit-box-shadow: 0px 0px 0px 9px #16b85f inset;
+  box-shadow: 0px 0px 0px 9px #16b85f inset;
+}
+/* line 38, ../sass/_switcher-mixin.scss */
+.form-switcher-ios.form-switcher-ios-sm input[type="checkbox"]:checked + .switcher:after {
+  -moz-transform: translateX(13px);
+  -ms-transform: translateX(13px);
+  -webkit-transform: translateX(13px);
+  transform: translateX(13px);
+}
+/* line 42, ../sass/_switcher-mixin.scss */
+.form-switcher-ios.form-switcher-ios-sm input[type="checkbox"]:checked + .switcher:hover:active:after {
+  -moz-transform: translateX(8.1px);
+  -ms-transform: translateX(8.1px);
+  -webkit-transform: translateX(8.1px);
+  transform: translateX(8.1px);
+}
+/* line 9, ../sass/_switcher-mixin.scss */
+.form-switcher-ios.form-switcher-ios-lg .switcher {
+  width: 53px;
+  height: 30px;
+}
+/* line 12, ../sass/_switcher-mixin.scss */
+.form-switcher-ios.form-switcher-ios-lg .switcher:hover:active {
+  -moz-box-shadow: 0px 0px 0px 13px #e6e6e6 inset;
+  -webkit-box-shadow: 0px 0px 0px 13px #e6e6e6 inset;
+  box-shadow: 0px 0px 0px 13px #e6e6e6 inset;
+}
+/* line 14, ../sass/_switcher-mixin.scss */
+.form-switcher-ios.form-switcher-ios-lg .switcher:hover:active:after {
+  width: 35.1px !important;
+}
+/* line 18, ../sass/_switcher-mixin.scss */
+.form-switcher-ios.form-switcher-ios-lg .switcher:after {
+  height: 26px;
+  width: 26px;
+}
+/* line 25, ../sass/_switcher-mixin.scss */
+.form-switcher-ios.form-switcher-ios-lg input[type="checkbox"]:disabled + .switcher:after {
+  height: 26px !important;
+  width: 26px !important;
+}
+/* line 31, ../sass/_switcher-mixin.scss */
+.form-switcher-ios.form-switcher-ios-lg input[type="checkbox"]:disabled:checked + .switcher:after {
+  -moz-transform: translateX(23px) !important;
+  -ms-transform: translateX(23px) !important;
+  -webkit-transform: translateX(23px) !important;
+  transform: translateX(23px) !important;
+}
+/* line 35, ../sass/_switcher-mixin.scss */
+.form-switcher-ios.form-switcher-ios-lg input[type="checkbox"]:checked + .switcher {
+  border-color: #16b85f;
+  -moz-box-shadow: 0px 0px 0px 15px #16b85f inset;
+  -webkit-box-shadow: 0px 0px 0px 15px #16b85f inset;
+  box-shadow: 0px 0px 0px 15px #16b85f inset;
+}
+/* line 38, ../sass/_switcher-mixin.scss */
+.form-switcher-ios.form-switcher-ios-lg input[type="checkbox"]:checked + .switcher:after {
+  -moz-transform: translateX(23px);
+  -ms-transform: translateX(23px);
+  -webkit-transform: translateX(23px);
+  transform: translateX(23px);
+}
+/* line 42, ../sass/_switcher-mixin.scss */
+.form-switcher-ios.form-switcher-ios-lg input[type="checkbox"]:checked + .switcher:hover:active:after {
+  -moz-transform: translateX(13.9px);
+  -ms-transform: translateX(13.9px);
+  -webkit-transform: translateX(13.9px);
+  transform: translateX(13.9px);
+}
+@media (max-width: 767px) {
+  /* line 9, ../sass/_switcher-mixin.scss */
+  .form-switcher-ios.form-switcher-ios-sm-phone .switcher {
+    width: 31px;
+    height: 18px;
+  }
+  /* line 12, ../sass/_switcher-mixin.scss */
+  .form-switcher-ios.form-switcher-ios-sm-phone .switcher:hover:active {
+    -moz-box-shadow: 0px 0px 0px 13px #e6e6e6 inset;
+    -webkit-box-shadow: 0px 0px 0px 13px #e6e6e6 inset;
+    box-shadow: 0px 0px 0px 13px #e6e6e6 inset;
+  }
+  /* line 14, ../sass/_switcher-mixin.scss */
+  .form-switcher-ios.form-switcher-ios-sm-phone .switcher:hover:active:after {
+    width: 18.9px !important;
+  }
+  /* line 18, ../sass/_switcher-mixin.scss */
+  .form-switcher-ios.form-switcher-ios-sm-phone .switcher:after {
+    height: 14px;
+    width: 14px;
+  }
+  /* line 25, ../sass/_switcher-mixin.scss */
+  .form-switcher-ios.form-switcher-ios-sm-phone input[type="checkbox"]:disabled + .switcher:after {
+    height: 14px !important;
+    width: 14px !important;
+  }
+  /* line 31, ../sass/_switcher-mixin.scss */
+  .form-switcher-ios.form-switcher-ios-sm-phone input[type="checkbox"]:disabled:checked + .switcher:after {
+    -moz-transform: translateX(13px) !important;
+    -ms-transform: translateX(13px) !important;
+    -webkit-transform: translateX(13px) !important;
+    transform: translateX(13px) !important;
+  }
+  /* line 35, ../sass/_switcher-mixin.scss */
+  .form-switcher-ios.form-switcher-ios-sm-phone input[type="checkbox"]:checked + .switcher {
+    border-color: #16b85f;
+    -moz-box-shadow: 0px 0px 0px 9px #16b85f inset;
+    -webkit-box-shadow: 0px 0px 0px 9px #16b85f inset;
+    box-shadow: 0px 0px 0px 9px #16b85f inset;
+  }
+  /* line 38, ../sass/_switcher-mixin.scss */
+  .form-switcher-ios.form-switcher-ios-sm-phone input[type="checkbox"]:checked + .switcher:after {
+    -moz-transform: translateX(13px);
+    -ms-transform: translateX(13px);
+    -webkit-transform: translateX(13px);
+    transform: translateX(13px);
+  }
+  /* line 42, ../sass/_switcher-mixin.scss */
+  .form-switcher-ios.form-switcher-ios-sm-phone input[type="checkbox"]:checked + .switcher:hover:active:after {
+    -moz-transform: translateX(8.1px);
+    -ms-transform: translateX(8.1px);
+    -webkit-transform: translateX(8.1px);
+    transform: translateX(8.1px);
+  }
+  /* line 9, ../sass/_switcher-mixin.scss */
+  .form-switcher-ios.form-switcher-ios-md-phone .switcher {
+    width: 43px;
+    height: 21px;
+  }
+  /* line 12, ../sass/_switcher-mixin.scss */
+  .form-switcher-ios.form-switcher-ios-md-phone .switcher:hover:active {
+    -moz-box-shadow: 0px 0px 0px 13px #e6e6e6 inset;
+    -webkit-box-shadow: 0px 0px 0px 13px #e6e6e6 inset;
+    box-shadow: 0px 0px 0px 13px #e6e6e6 inset;
+  }
+  /* line 14, ../sass/_switcher-mixin.scss */
+  .form-switcher-ios.form-switcher-ios-md-phone .switcher:hover:active:after {
+    width: 28.35px !important;
+  }
+  /* line 18, ../sass/_switcher-mixin.scss */
+  .form-switcher-ios.form-switcher-ios-md-phone .switcher:after {
+    height: 21px;
+    width: 21px;
+  }
+  /* line 25, ../sass/_switcher-mixin.scss */
+  .form-switcher-ios.form-switcher-ios-md-phone input[type="checkbox"]:disabled + .switcher:after {
+    height: 21px !important;
+    width: 21px !important;
+  }
+  /* line 31, ../sass/_switcher-mixin.scss */
+  .form-switcher-ios.form-switcher-ios-md-phone input[type="checkbox"]:disabled:checked + .switcher:after {
+    -moz-transform: translateX(18px) !important;
+    -ms-transform: translateX(18px) !important;
+    -webkit-transform: translateX(18px) !important;
+    transform: translateX(18px) !important;
+  }
+  /* line 35, ../sass/_switcher-mixin.scss */
+  .form-switcher-ios.form-switcher-ios-md-phone input[type="checkbox"]:checked + .switcher {
+    border-color: #16b85f;
+    -moz-box-shadow: 0px 0px 0px 12.5px #16b85f inset;
+    -webkit-box-shadow: 0px 0px 0px 12.5px #16b85f inset;
+    box-shadow: 0px 0px 0px 12.5px #16b85f inset;
+  }
+  /* line 38, ../sass/_switcher-mixin.scss */
+  .form-switcher-ios.form-switcher-ios-md-phone input[type="checkbox"]:checked + .switcher:after {
+    -moz-transform: translateX(22px);
+    -ms-transform: translateX(22px);
+    -webkit-transform: translateX(22px);
+    transform: translateX(22px);
+  }
+  /* line 42, ../sass/_switcher-mixin.scss */
+  .form-switcher-ios.form-switcher-ios-md-phone input[type="checkbox"]:checked + .switcher:hover:active:after {
+    -moz-transform: translateX(10.65px);
+    -ms-transform: translateX(10.65px);
+    -webkit-transform: translateX(10.65px);
+    transform: translateX(10.65px);
+  }
+  /* line 9, ../sass/_switcher-mixin.scss */
+  .form-switcher-ios.form-switcher-ios-lg-phone .switcher {
+    width: 53px;
+    height: 30px;
+  }
+  /* line 12, ../sass/_switcher-mixin.scss */
+  .form-switcher-ios.form-switcher-ios-lg-phone .switcher:hover:active {
+    -moz-box-shadow: 0px 0px 0px 13px #e6e6e6 inset;
+    -webkit-box-shadow: 0px 0px 0px 13px #e6e6e6 inset;
+    box-shadow: 0px 0px 0px 13px #e6e6e6 inset;
+  }
+  /* line 14, ../sass/_switcher-mixin.scss */
+  .form-switcher-ios.form-switcher-ios-lg-phone .switcher:hover:active:after {
+    width: 35.1px !important;
+  }
+  /* line 18, ../sass/_switcher-mixin.scss */
+  .form-switcher-ios.form-switcher-ios-lg-phone .switcher:after {
+    height: 26px;
+    width: 26px;
+  }
+  /* line 25, ../sass/_switcher-mixin.scss */
+  .form-switcher-ios.form-switcher-ios-lg-phone input[type="checkbox"]:disabled + .switcher:after {
+    height: 26px !important;
+    width: 26px !important;
+  }
+  /* line 31, ../sass/_switcher-mixin.scss */
+  .form-switcher-ios.form-switcher-ios-lg-phone input[type="checkbox"]:disabled:checked + .switcher:after {
+    -moz-transform: translateX(23px) !important;
+    -ms-transform: translateX(23px) !important;
+    -webkit-transform: translateX(23px) !important;
+    transform: translateX(23px) !important;
+  }
+  /* line 35, ../sass/_switcher-mixin.scss */
+  .form-switcher-ios.form-switcher-ios-lg-phone input[type="checkbox"]:checked + .switcher {
+    border-color: #16b85f;
+    -moz-box-shadow: 0px 0px 0px 15px #16b85f inset;
+    -webkit-box-shadow: 0px 0px 0px 15px #16b85f inset;
+    box-shadow: 0px 0px 0px 15px #16b85f inset;
+  }
+  /* line 38, ../sass/_switcher-mixin.scss */
+  .form-switcher-ios.form-switcher-ios-lg-phone input[type="checkbox"]:checked + .switcher:after {
+    -moz-transform: translateX(23px);
+    -ms-transform: translateX(23px);
+    -webkit-transform: translateX(23px);
+    transform: translateX(23px);
+  }
+  /* line 42, ../sass/_switcher-mixin.scss */
+  .form-switcher-ios.form-switcher-ios-lg-phone input[type="checkbox"]:checked + .switcher:hover:active:after {
+    -moz-transform: translateX(13.9px);
+    -ms-transform: translateX(13.9px);
+    -webkit-transform: translateX(13.9px);
+    transform: translateX(13.9px);
+  }
+}
+@media (max-width: 991px) {
+  /* line 9, ../sass/_switcher-mixin.scss */
+  .form-switcher-ios.form-switcher-ios-sm-tablet .switcher {
+    width: 31px;
+    height: 18px;
+  }
+  /* line 12, ../sass/_switcher-mixin.scss */
+  .form-switcher-ios.form-switcher-ios-sm-tablet .switcher:hover:active {
+    -moz-box-shadow: 0px 0px 0px 13px #e6e6e6 inset;
+    -webkit-box-shadow: 0px 0px 0px 13px #e6e6e6 inset;
+    box-shadow: 0px 0px 0px 13px #e6e6e6 inset;
+  }
+  /* line 14, ../sass/_switcher-mixin.scss */
+  .form-switcher-ios.form-switcher-ios-sm-tablet .switcher:hover:active:after {
+    width: 18.9px !important;
+  }
+  /* line 18, ../sass/_switcher-mixin.scss */
+  .form-switcher-ios.form-switcher-ios-sm-tablet .switcher:after {
+    height: 14px;
+    width: 14px;
+  }
+  /* line 25, ../sass/_switcher-mixin.scss */
+  .form-switcher-ios.form-switcher-ios-sm-tablet input[type="checkbox"]:disabled + .switcher:after {
+    height: 14px !important;
+    width: 14px !important;
+  }
+  /* line 31, ../sass/_switcher-mixin.scss */
+  .form-switcher-ios.form-switcher-ios-sm-tablet input[type="checkbox"]:disabled:checked + .switcher:after {
+    -moz-transform: translateX(13px) !important;
+    -ms-transform: translateX(13px) !important;
+    -webkit-transform: translateX(13px) !important;
+    transform: translateX(13px) !important;
+  }
+  /* line 35, ../sass/_switcher-mixin.scss */
+  .form-switcher-ios.form-switcher-ios-sm-tablet input[type="checkbox"]:checked + .switcher {
+    border-color: #16b85f;
+    -moz-box-shadow: 0px 0px 0px 9px #16b85f inset;
+    -webkit-box-shadow: 0px 0px 0px 9px #16b85f inset;
+    box-shadow: 0px 0px 0px 9px #16b85f inset;
+  }
+  /* line 38, ../sass/_switcher-mixin.scss */
+  .form-switcher-ios.form-switcher-ios-sm-tablet input[type="checkbox"]:checked + .switcher:after {
+    -moz-transform: translateX(13px);
+    -ms-transform: translateX(13px);
+    -webkit-transform: translateX(13px);
+    transform: translateX(13px);
+  }
+  /* line 42, ../sass/_switcher-mixin.scss */
+  .form-switcher-ios.form-switcher-ios-sm-tablet input[type="checkbox"]:checked + .switcher:hover:active:after {
+    -moz-transform: translateX(8.1px);
+    -ms-transform: translateX(8.1px);
+    -webkit-transform: translateX(8.1px);
+    transform: translateX(8.1px);
+  }
+  /* line 9, ../sass/_switcher-mixin.scss */
+  .form-switcher-ios.form-switcher-ios-md-tablet .switcher {
+    width: 43px;
+    height: 25px;
+  }
+  /* line 12, ../sass/_switcher-mixin.scss */
+  .form-switcher-ios.form-switcher-ios-md-tablet .switcher:hover:active {
+    -moz-box-shadow: 0px 0px 0px 13px #e6e6e6 inset;
+    -webkit-box-shadow: 0px 0px 0px 13px #e6e6e6 inset;
+    box-shadow: 0px 0px 0px 13px #e6e6e6 inset;
+  }
+  /* line 14, ../sass/_switcher-mixin.scss */
+  .form-switcher-ios.form-switcher-ios-md-tablet .switcher:hover:active:after {
+    width: 28.35px !important;
+  }
+  /* line 18, ../sass/_switcher-mixin.scss */
+  .form-switcher-ios.form-switcher-ios-md-tablet .switcher:after {
+    height: 21px;
+    width: 21px;
+  }
+  /* line 25, ../sass/_switcher-mixin.scss */
+  .form-switcher-ios.form-switcher-ios-md-tablet input[type="checkbox"]:disabled + .switcher:after {
+    height: 21px !important;
+    width: 21px !important;
+  }
+  /* line 31, ../sass/_switcher-mixin.scss */
+  .form-switcher-ios.form-switcher-ios-md-tablet input[type="checkbox"]:disabled:checked + .switcher:after {
+    -moz-transform: translateX(18px) !important;
+    -ms-transform: translateX(18px) !important;
+    -webkit-transform: translateX(18px) !important;
+    transform: translateX(18px) !important;
+  }
+  /* line 35, ../sass/_switcher-mixin.scss */
+  .form-switcher-ios.form-switcher-ios-md-tablet input[type="checkbox"]:checked + .switcher {
+    border-color: #16b85f;
+    -moz-box-shadow: 0px 0px 0px 12.5px #16b85f inset;
+    -webkit-box-shadow: 0px 0px 0px 12.5px #16b85f inset;
+    box-shadow: 0px 0px 0px 12.5px #16b85f inset;
+  }
+  /* line 38, ../sass/_switcher-mixin.scss */
+  .form-switcher-ios.form-switcher-ios-md-tablet input[type="checkbox"]:checked + .switcher:after {
+    -moz-transform: translateX(18px);
+    -ms-transform: translateX(18px);
+    -webkit-transform: translateX(18px);
+    transform: translateX(18px);
+  }
+  /* line 42, ../sass/_switcher-mixin.scss */
+  .form-switcher-ios.form-switcher-ios-md-tablet input[type="checkbox"]:checked + .switcher:hover:active:after {
+    -moz-transform: translateX(10.65px);
+    -ms-transform: translateX(10.65px);
+    -webkit-transform: translateX(10.65px);
+    transform: translateX(10.65px);
+  }
+  /* line 9, ../sass/_switcher-mixin.scss */
+  .form-switcher-ios.form-switcher-ios-lg-tablet .switcher {
+    width: 53px;
+    height: 30px;
+  }
+  /* line 12, ../sass/_switcher-mixin.scss */
+  .form-switcher-ios.form-switcher-ios-lg-tablet .switcher:hover:active {
+    -moz-box-shadow: 0px 0px 0px 13px #e6e6e6 inset;
+    -webkit-box-shadow: 0px 0px 0px 13px #e6e6e6 inset;
+    box-shadow: 0px 0px 0px 13px #e6e6e6 inset;
+  }
+  /* line 14, ../sass/_switcher-mixin.scss */
+  .form-switcher-ios.form-switcher-ios-lg-tablet .switcher:hover:active:after {
+    width: 35.1px !important;
+  }
+  /* line 18, ../sass/_switcher-mixin.scss */
+  .form-switcher-ios.form-switcher-ios-lg-tablet .switcher:after {
+    height: 26px;
+    width: 26px;
+  }
+  /* line 25, ../sass/_switcher-mixin.scss */
+  .form-switcher-ios.form-switcher-ios-lg-tablet input[type="checkbox"]:disabled + .switcher:after {
+    height: 26px !important;
+    width: 26px !important;
+  }
+  /* line 31, ../sass/_switcher-mixin.scss */
+  .form-switcher-ios.form-switcher-ios-lg-tablet input[type="checkbox"]:disabled:checked + .switcher:after {
+    -moz-transform: translateX(23px) !important;
+    -ms-transform: translateX(23px) !important;
+    -webkit-transform: translateX(23px) !important;
+    transform: translateX(23px) !important;
+  }
+  /* line 35, ../sass/_switcher-mixin.scss */
+  .form-switcher-ios.form-switcher-ios-lg-tablet input[type="checkbox"]:checked + .switcher {
+    border-color: #16b85f;
+    -moz-box-shadow: 0px 0px 0px 15px #16b85f inset;
+    -webkit-box-shadow: 0px 0px 0px 15px #16b85f inset;
+    box-shadow: 0px 0px 0px 15px #16b85f inset;
+  }
+  /* line 38, ../sass/_switcher-mixin.scss */
+  .form-switcher-ios.form-switcher-ios-lg-tablet input[type="checkbox"]:checked + .switcher:after {
+    -moz-transform: translateX(23px);
+    -ms-transform: translateX(23px);
+    -webkit-transform: translateX(23px);
+    transform: translateX(23px);
+  }
+  /* line 42, ../sass/_switcher-mixin.scss */
+  .form-switcher-ios.form-switcher-ios-lg-tablet input[type="checkbox"]:checked + .switcher:hover:active:after {
+    -moz-transform: translateX(13.9px);
+    -ms-transform: translateX(13.9px);
+    -webkit-transform: translateX(13.9px);
+    transform: translateX(13.9px);
+  }
+}
+
+
+

@@ -28,7 +28,7 @@ $langslug = $langs ? "[".implode("|", $langs).":lang]" : "";
 // landing page in different address. For ex: you can install the script
 // to subdirectory or subdomain of your wordpress website.
 App::addRoute("GET|POST", "/", "Login");
-App::addRoute("GET|POST", "/".$langslug."?/?", "Login");
+App::addRoute("GET|POST", "/".$langslug."?/?", "Index");
 
 // Login
 App::addRoute("GET|POST", "/".$langslug."?/login/?", "Login");
@@ -57,11 +57,11 @@ App::addRoute("GET|POST", "/".$langslug."?/recovery/[i:id].[a:hash]/?", "Passwor
 App::addRoute("GET|POST", "/post/[i:id]?/?", "Post");
 
 // Instagram Accounts
-App::addRoute("GET|POST", "/accounts/?", "PMAccounts");
+App::addRoute("GET|POST", "/accounts/?", "Accounts");
 // New Instagram Account
-App::addRoute("GET|POST", "/accounts/new/?", "PMAccount");
+App::addRoute("GET|POST", "/accounts/new/?", "Account");
 // Edit Instagram Account
-App::addRoute("GET|POST", "/accounts/[i:id]/?", "PMAccount");
+App::addRoute("GET|POST", "/accounts/[i:id]/?", "Account");
 
 // Caption Templates
 App::addRoute("GET|POST", "/captions/?", "Captions");

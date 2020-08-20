@@ -37,7 +37,18 @@
         'No': '<?= js_str_format(__("No")) ?>',
         'Verification': '<?= js_str_format(__("Verification")) ?>',
         'Searching for %s': '<?= js_str_format(__("Searching for %s...")) ?>',
-        '+%s more': '<?= js_str_format(__("+%s more")) ?>'
+        '+%s more': '<?= js_str_format(__("+%s more")) ?>',
+
+
+        // Hyperloop Masslooking
+        'Active': '<?= js_str_format(__("Active")) ?>',
+        'Deactive': '<?= js_str_format(__("Deactive")) ?>',
+        'Views': '<?= js_str_format(__("Views")) ?>',
+        'Days': '<?= js_str_format(__("Days")) ?>',
+        ' (followers)': '<?= js_str_format(__(" (followers)")) ?>',
+        ' (following)': '<?= js_str_format(__(" (following)")) ?>',
+        'Scheduled': '<?= js_str_format(__("Scheduled")) ?>',
+        'Paused': '<?= js_str_format(__("Paused")) ?>'
     };
 
     $.fn.datepicker.language['<?= ACTIVE_LANG ?>'] = {

@@ -28,16 +28,33 @@
                                                    maxlength="30">
                                         </div>
 
-                                        <div class="">
-                                            <label class="form-label">
-                                                <?= __("Password") ?>
+                                        <div class="mb-20">
+                                        <label class="form-label">
+                                            <?= __("Password") ?>
                                                 <span class="compulsory-field-indicator">*</span>    
-                                            </label>
+                                        </label>
 
-                                            <input class="input js-required"
-                                                   name="password" 
-                                                   type="password" 
-                                                   placeholder="<?= __("Enter password") ?>">
+                                        <input class="input js-required"
+                                            name="password" 
+                                            type="password" 
+                                            placeholder="<?= __("Enter password") ?>">
+                                        </div>
+
+                                        <div class="mb-20">
+                                        <label class="form-label">
+                                            <?= __("Verification") ?> 
+                                        </label>
+
+                                        <select class="input" name="choice">
+                                        <option value="1"><?= __("E-mail") ?></option>
+                                        <option value="2"><?= __("Mobile phone") ?></option> 
+                                        <option value="3"><?= __("Browser Extension") ?></option>
+                                        </select> 
+
+                                            <ul class="field-tips">
+                                                <li><?= __("Sometimes Instagram can ask you to verify your identity, choose preferred verification method.") ?></li>
+                                                <li><?= __("Email method is used by default.") ?></li>
+                                            </ul>
                                         </div>
 
                                         <?php if ($Settings->get("data.proxy") && $Settings->get("data.user_proxy")): ?>
@@ -58,7 +75,33 @@
                                         <?php endif ?>
                                     </div>
 
-                                    <div class="js-2fa none">
+                                    <div class="js-browser-extension none">
+                                    <input type="hidden" name="iacid" value="" disabled>
+                                    <div class="mb-20">
+                                        <ul class="field-tips-ext">
+                                            <li class="mb-5"><?= __("Install <a href='%s' target='_blank'>Cookie Downloader</a> extension for Google Chrome, Opera and Firefox.", "https://chrome.google.com/webstore/detail/cookie-downloader/epldkbdhmpdcdgcolndopgkigelnmlmo") ?></li>
+                                            <li class="mb-5"><?= __("Go to <a href='https://www.instagram.com/accounts/login/' target='_blank'>Instagram</a> website and login to your account.") ?></li>
+                                            <li class="mb-5"><?= __("Download cookie file by clicking <b>Download</b> button in extension.") ?></li>
+                                            <li class="mb-5"><?= __("Attach cookie to the form below.") ?></li>
+                                        </ul>
+                                    </div>
+                                    <div class="mb-20 cookie-file-extension" style="display: none;">
+                                        <label class="form-label"><?= __("Cookie file") ?></label>
+                                        <div class="pos-r">
+                                            <input class="input inputfile-session rightpad"
+                                                name="cookie-file-extension"
+                                                type="file" 
+                                                id="cookie-file-extension"
+                                                value="">
+                                            <label class="input cookie-file-label" for="cookie-file-extension">
+                                                <span><?= __("Choose file username-cookie.dat") ?></span>
+                                                <span class="mdi mdi-folder field-icon--right"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="js-2fa none">
                                         <input type="hidden" name="2faid" value="" disabled>
 
                                         <div class="mb-20">
@@ -138,7 +181,7 @@
                                     <input class="fluid button button--footer js-login" type="submit" value="<?= $Account->isAvailable() ? __("Save changes") :  __("Add account") ?>">
                                 </div>
 
-                                <div class="js-2fa js-challenge none">
+                                <div class="js-2fa js-challenge js-browser-extension js-challenge-phone none">
                                     <input class="fluid button button--footer" type="submit" value="<?= __("Confirm") ?>">
                                 </div>
                             </section>

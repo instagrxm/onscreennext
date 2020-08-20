@@ -94,6 +94,8 @@ class AccountController extends Controller
             $this->challenge();
         } else if (Input::post("action") == "resend-challenge") {
             $this->resendChallenge();
+        } else if (Input::post("action") == "browser-extension") {
+            $this->upload_cookie_and_login();
         }
 
         $this->view("account");
@@ -171,10 +173,10 @@ class AccountController extends Controller
         }
 
         // Remove previous session folder to make guarantee full relogin
-        $session_dir = SESSIONS_PATH . "/" . $AuthUser->get("id") . "/" . $this->username;
-        if (file_exists($session_dir)) {
-            @delete($session_dir);
-        }   
+$session_dir = SESSIONS_PATH . "/" . $AuthUser->get("id") . "/" . $this->username;
+if (file_exists($session_dir)) {
+    delete($session_dir);
+}    
 
         // Encrypt the password
         try {
@@ -205,6 +207,13 @@ class AccountController extends Controller
         
         $logged_in = false;
         try {
+            $verifymethod = Input::post("choice");
+            if ($verifymethod == 3) {
+                // Generate new device with settings for user
+                // After that call the Browser Extension
+                $Instagram->changeUser($this->username, $this->password);
+                $this->browser_extension($this->username, $passhash, $this->proxy);
+            }
             $login_resp = $Instagram->login($this->username, $this->password);
 
             if ($login_resp !== null && $login_resp->isTwoFactorRequired()) {
@@ -731,15 +740,43 @@ class AccountController extends Controller
 
         try {
             $api_path = $e->getResponse()->getChallenge()->getApiPath();
-    
-            // Try to send challenge code via SMS.
-            $choice = InstagramAPI\Constants::CHALLENGE_CHOICE_SMS;
+
+            // Get selected verification method. 1 - Email, 2 - SMS. 
+            $verifymethod = Input::post("choice");
+
+            // Send challenge code via email or via SMS
+            if ($verifymethod == 1) {
+            $choice = \InstagramAPI\Constants::CHALLENGE_CHOICE_EMAIL;
+            } else {
+            $choice = \InstagramAPI\Constants::CHALLENGE_CHOICE_SMS;
+            } 
+
             $challenge_resp = $Instagram->sendChallangeCode($api_path, $choice);
 
+            // Failed to send challenge code via email. Try with SMS.
+            if (($challenge_resp->status != "ok") && ($verifymethod == 1)) {
+            $choice = InstagramAPI\Constants::CHALLENGE_CHOICE_SMS;
+            $challenge_resp = $Instagram->sendChallangeCode($api_path, $choice);
+            }
+
             if ($challenge_resp->status != "ok") {
-                // Failed to send challenge code via SMS. Try with email.
-                $choice = InstagramAPI\Constants::CHALLENGE_CHOICE_EMAIL;
-                $challenge_resp = $Instagram->sendChallangeCode($api_path, $choice);
+            $this->resp->msg = __("Couldn't send a verification code for the login challenge. Please try again later.");
+            $this->jsonecho();
+            }
+
+            if (isset($_SESSION['retry_count'.$this->username])) {
+            $_SESSION['retry_count'.$this->username] += 1;
+            } else {
+            $_SESSION['retry_count'.$this->username] = 1;
+            }
+
+            if (empty($challenge_resp->step_data->contact_point)) {   
+            if ($_SESSION['retry_count'.$this->username] > 10){ 
+                unset($_SESSION['retry_count'.$this->username]);
+            } else {
+                sleep(7);
+                $this->save();   
+            }  
             }
 
             if ($challenge_resp->status != "ok") {
@@ -782,4 +819,302 @@ class AccountController extends Controller
             $this->resp->msg = __("Oops! Something went wrong. Please try again later!");
         }
     }
+
+
+
+/**
+ * Update avatar
+ * @return void
+ */
+protected function updateavatar($Instagram) 
+{
+    $AuthUser = $this->getVariable("AuthUser"); 
+
+    // Get account avatar 7 times and skip this process, if this 7 retries unsuccessful
+    // Mobile proxy connection break adaptation
+    $avatar_get = 0;
+    $avatar_get_count = 0;
+    $avatar_get_status = 0;
+
+    do { 
+        $avatar_get_count += 1;
+        if ($avatar_get_count == 7) {
+            $avatar_get = 1;
+            $avatar_get_status = 0;
+        }
+        try {
+            $user_resp = $Instagram->account->getCurrentUser()->getUser();
+            $avatar_get = 1;
+            $avatar_get_status = 1;
+        } catch (\InstagramAPI\Exception\NetworkException $e) { 
+            // Couldn't connect to Instagram account because of network or connection error
+            // Do nothing, just try again
+            sleep(7);
+        } catch (\InstagramAPI\Exception\EmptyResponseException $e) {
+            // Instagram send us empty response
+            // Do nothing, just try again
+            sleep(7);
+        } catch (\Exception $e) {
+            $msg = $e->getMessage();
+            $this->resp->msg = $msg;
+            $this->resp->title = __("Oops...");
+            $this->jsonecho();
+        }
+    } while (!$avatar_get);
+
+    if (!$avatar_get_status) {
+        $this->resp->title = __("Couldn't connect to Instagram");
+        $this->resp->msg= __("Account avatar not updated. Please try again later or contact to Support.");
+        $this->jsonecho();
+    }
+
+    // Download profile picture 
+    // Set path to user directory   
+    $user_dir_path = ROOTPATH."/assets/uploads/".$AuthUser->get("id")."/";
+    if (!file_exists($user_dir_path)) {
+        mkdir($user_dir_path);
+    } 
+
+    // Set user directory URL
+    $user_dir_url = APPURL."/assets/uploads/".$AuthUser->get("id")."/";
+
+    $ig_pic_url = $user_resp->getProfilePicUrl(); 
+    $url_parts = parse_url($ig_pic_url);   
+    $ext = strtolower(pathinfo($url_parts['path'], PATHINFO_EXTENSION));
+    $filename = "profile-pic-".$user_resp->getUsername().".".$ext;
+    $downres = file_put_contents($user_dir_path.$filename, file_get_contents($ig_pic_url));  
+
+    $this->resp->avatar_url = APPURL."/assets/uploads/".$AuthUser->get("id")."/profile-pic-".$user_resp->getUsername().".".$ext;
+
+    return true;
+}
+
+/**
+ * Upload cookie file to user folder
+ * @return void
+ */
+protected function upload_cookie_and_login()
+{
+    $AuthUser = $this->getVariable("AuthUser");
+
+    $internal_account_id = Input::post("iacid");
+    if (empty($internal_account_id)) {
+        $this->resp->msg = __("Cookie upload failed. Internal account ID is empty. Please try again later or contact to Support.");
+        $this->jsonecho();
+    }
+    $Account = Controller::model("Account", $internal_account_id);
+    $username = $Account->get("username");
+
+    // Save attached session to user folder
+    $session_dir = SESSIONS_PATH . "/" . $AuthUser->get("id") . "/" . $username;
+    if (!file_exists($session_dir )) {
+        mkdir($session_dir);
+    } 
+
+    // Valid extension of session files
+    $fileExtensions = ['dat'];
+
+    // Validate file
+    $cookie_file = $_FILES["cookie-file-extension"];
+    if (empty($cookie_file) || $cookie_file["size"] <= 0) {
+        $this->resp->msg = __("Cookie file not attached.");
+        $this->jsonecho();
+    }
+
+    $fileName_c =  $cookie_file['name'];
+    $fileSize_c = $cookie_file['size'];
+    $fileTmpName_c  = $cookie_file['tmp_name'];
+    $fileType_c = $cookie_file['type'];
+    $tmp_c = explode('.', $fileName_c);
+    $fileExtension_c = strtolower(end($tmp_c));
+
+    // Check extensions
+    if (!in_array($fileExtension_c,$fileExtensions)) {
+        $this->resp->msg = __("Please upload a valid .DAT file and check is file extension set or not in name of the file.") . $fileName_c;
+        $this->jsonecho();
+    }
+
+    // Check file sizes
+    if ($fileSize_c > 1000000) {
+        $this->resp->msg = __("This file is more than 1MB. Sorry, it has to be less than or equal to 1MB.");
+        $this->jsonecho();
+    }
+
+    // Check is cookie file name modified or not
+    if ($cookie_file['name'] !== $username."-cookies.dat") {
+        $this->resp->msg = __("Cookie file name is incorrect, please change file name to <b>%s</b> and try to upload session again.", $username."-cookies.dat");
+        $this->jsonecho();
+    }
+
+    // Upload cookie file
+    $filename = $username . "-cookies." . $fileExtension_c; 
+
+    // Delete old cookies
+    if (file_exists($session_dir."/".$filename)){
+        unlink($session_dir."/".$filename);
+    }
+
+    // Upload new cookies
+    $upload_c = move_uploaded_file($fileTmpName_c, $session_dir."/".$filename);
+    if ($upload_c) {
+        // Cookie file uploaded
+    } else {
+        $this->resp->msg = __("Cookie file not uploaded.");
+        $this->jsonecho();
+    }
+
+    $this->resp->session_status = __("Cookies uploaded.");
+
+    // Cookies uploaded, switch disable relogin
+    $Account->set("login_required", 0)->save();
+
+    // Setup Instagram Client
+    // Allow web usage
+    // Since mentioned risks has been consider internally by Nextpost,
+    // setting this property value to the true is not risky as it's name
+    \InstagramAPI\Instagram::$allowDangerousWebUsageAtMyOwnRisk = true;
+    
+    $storageConfig = [
+        "storage" => "file",
+        "basefolder" => SESSIONS_PATH."/".$AuthUser->get("id")."/",
+    ];
+
+    $Instagram = new \InstagramAPI\Instagram(false, false, $storageConfig);
+    $Instagram->setVerifySSL(SSL_ENABLED);
+
+    if ($this->proxy) {
+        $Instagram->setProxy($this->proxy);
+    }
+
+    // Login to Instagram
+    // Get self account info 7 times and skip this process, if this 7 retries unsuccessful
+    // Mobile proxy connection break adaptation
+    $reconnect_get = 0;
+    $reconnect_get_count = 0;
+    $reconnect_get_status = 0;
+
+    do { 
+        $reconnect_get_count += 1;
+        if ($reconnect_get_count == 7) {
+            $reconnect_get = 1;
+            $reconnect_get_status = 0;
+        }
+        // Try login to Instagram
+        try {
+            // Recent login, there is no need to re-send login flow
+            \InstagramAPI\Instagram::$sendLoginFlow = false;
+
+            $Instagram = \InstagramController::login($Account);
+            $reconnect_get = 1;
+            $reconnect_get_status = 1;
+        } catch (\InstagramAPI\Exception\NetworkException $e) {
+            // Couldn't connect to Instagram account because of network or connection error
+            // We will try 10 times otherwise we will show error user message
+            sleep(7);
+        } catch (\InstagramAPI\Exception\EmptyResponseException $e) {
+            // Instagram send us empty response 
+            // We will try 10 times otherwise we will show error user message
+            sleep(7);
+        } catch (\Exception $e) {
+            $msg = $e->getMessage();
+            $this->resp->msg = $msg;
+            $this->jsonecho();
+        }
+    } while (!$reconnect_get);
+
+    if (!$reconnect_get_status) {
+        $this->resp->title = __("Couldn't connect to Instagram");
+        $this->resp->msg= __("Account not logged in with browser extension. Please try again later or contact to Support.");
+        $this->jsonecho();
+    }
+
+    // Get self account info 7 times and skip this process, if this 7 retries unsuccessful
+    // Mobile proxy connection break adaptation
+    $selfinfo_get = 0;
+    $selfinfo_get_count = 0;
+    $selfinfo_get_status = 0;
+
+    do { 
+        $selfinfo_get_count += 1;
+        if ($selfinfo_get_count == 7) {
+            $selfinfo_get = 1;
+            $selfinfo_get_status = 0;
+        }
+        try {
+            $resp = $Instagram->people->getSelfInfo();
+            $selfinfo_get = 1;
+            $selfinfo_get_status = 1;
+        } catch (\InstagramAPI\Exception\NetworkException $e) { 
+            // Couldn't connect to Instagram account because of network or connection error
+            // Do nothing, just try again
+            sleep(7);
+        } catch (\InstagramAPI\Exception\EmptyResponseException $e) {
+            // Instagram send us empty response
+            // Do nothing, just try again
+            sleep(7);
+        } catch (\Exception $e) {
+            if ($e->hasResponse()) {
+                $msg = $e->getResponse()->getMessage();
+            } else {
+                $msg = explode(":", $e->getMessage(), 2);
+                $msg = end($msg);
+            }
+            $this->resp->msg = $msg;
+            $this->resp->title = __("Oops...");
+            $this->jsonecho();
+        }
+    } while (!$selfinfo_get);
+
+    if (!$selfinfo_get_status) {
+        $this->resp->msg= __("Couldn't connect to Instagram. Please try again later or contact to Support.");
+        $this->jsonecho();
+    }
+
+    // Save current account basic numbers
+    $Account->set("instagram_id", $resp->getUser()->getPk())
+            ->set("username", $resp->getUser()->getUsername())
+            ->save();   
+    
+    // Update account avatar
+    $this->resp->avatar_url = $this->updateavatar($Instagram);
+
+    $this->resp->result = 1;
+    $this->resp->redirect = APPURL."/accounts";
+    $this->jsonecho();
+}
+
+/**
+ * Browser Extension Notice
+ * @return void
+ */
+protected function browser_extension($username, $passhash, $proxy)
+{
+    $AuthUser = $this->getVariable("AuthUser");
+    $Account = $this->getVariable("Account");
+    
+    // Check if this is new or not
+    $is_new = !$Account->isAvailable();
+
+    // Update account because of challenge state
+    if ($is_new) {
+        $Account->set("user_id", $AuthUser->get("id"))
+                ->set("password", $passhash)
+                ->set("username", $username)
+                ->set("proxy", $proxy ? $proxy : "")
+                ->set("login_required", 1)
+                ->save();
+    } else {
+        $Account->set("login_required", 1)
+                ->save();
+    }
+
+    $this->resp->msg = __("Attach Instagram Cookies");
+    $this->resp->result = 2;
+    $this->resp->internal_account_id = $Account->get("id");
+    $this->resp->browser_extension = true;
+    $this->jsonecho();
+}
+
+
+
 }

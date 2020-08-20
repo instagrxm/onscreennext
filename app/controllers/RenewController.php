@@ -1,13 +1,7 @@
 <?php
-
 /**
  * Renew Controller
  */
-
-
-use Plugins\invoicer\CountryModel;
-use Plugins\invoicer\CountrysModel;
-
 class RenewController extends Controller
 {
     /**
@@ -18,14 +12,14 @@ class RenewController extends Controller
         $AuthUser = $this->getVariable("AuthUser");
         $Route = $this->getVariable("Route");
         $EmailSettings = \Controller::model("GeneralData", "email-settings");
-
+        
         if (!$AuthUser) {
             header("Location: ".APPURL."/login");
             exit;
         } else if (
-            !$AuthUser->isAdmin() &&
+            !$AuthUser->isAdmin() && 
             !$AuthUser->isEmailVerified() &&
-            $EmailSettings->get("data.email_verification"))
+            $EmailSettings->get("data.email_verification")) 
         {
             header("Location: ".APPURL."/profile?a=true");
             exit;
@@ -35,98 +29,49 @@ class RenewController extends Controller
         // Get active modules to be displayed in pricing table
         $Plugins = \Controller::model("Plugins");
         $Plugins->where("is_active", 1)
-            ->whereIn("idname", [
-                "auto-follow", "auto-unfollow", "auto-like",
-                "auto-comment", "welcomedm", "auto-repost"
-            ])->fetchData();
+                ->whereIn("idname", [
+                    "auto-follow", "auto-unfollow", "auto-like",
+                    "auto-comment", "welcomedm", "auto-repost", "reactions",
+                ])->fetchData();
 
-        $ActivePackage = Controller::model("Package", $AuthUser->get("package_id"));
 
         // Get Packages...
         $Packages = Controller::model("Packages");
+        $Packages->where("is_public", "=", 1)
+                 ->where("monthly_price", ">", 0)
+                 ->orderBy("id","ASC")
+                 ->fetchData();
 
-        if(Input::get("package") >= 1){
-            $SecurityAlert = true;
-        }else{
-            $SecurityAlert = false;
-        }
+        $ActivePackage = Controller::model("Package", $AuthUser->get("package_id"));
 
-        if(Input::get("change") == true || Input::get("package") >= 1 || !$ActivePackage->get("is_public") ){
-            $PackageAvailable = [];
-
-            // Get Accounts...
-            $Accounts = \Controller::model("Accounts");
-            $Accounts->where("user_id", "=", $AuthUser->get("id"))
-                ->orderBy("id","DESC")
-                ->fetchData();
-
-            $UserAccounts = count($Accounts->getDataAs("Account"));
-
-            $Packages->where("monthly_price", ">", 0)
-                ->orderBy("id","ASC")
-                ->fetchData();
-
-            foreach ($Packages->getDataAs("Package") AS $p){
-                $PackageSettings = json_decode($p->get("settings"));
-                if($PackageSettings->max_accounts >= $UserAccounts || $PackageSettings->max_accounts < 0){
-                    if($p->get("is_public") == true || $AuthUser->get("package_id") == $p->get("id")){
-                        array_push($PackageAvailable,$p);
-
-                        if($SecurityAlert == true && $p->get("id") == Input::get("package"))
-                        {
-                            $SecurityAlert = false;
-                        }
-                    }
-                }
-            }
-
-        }else{
-            $Packages->where("is_public", "=", 1)
-                ->where("monthly_price", ">", 0)
-                ->orderBy("id","ASC")
-                ->fetchData();
-        }
-
-        // Security Check
-        if($SecurityAlert){
-            header("Location: ".APPURL);
-            exit;
-        }
-
-        if($ActivePackage->isAvailable() && Input::get("package") >= 1){
-            $SelectedPackage = Controller::model("Package", Input::get("package"));
-        } else if ($ActivePackage->isAvailable()) {
+        if ($ActivePackage->isAvailable()) {
             $SelectedPackage = $ActivePackage;
         } else {
             $SelectedPackage = Controller::model("Package", Input::get("package"));
         }
 
-        if ($SelectedPackage->get("monthly_price") <= 0 || Input::get("change") == true) {
-            $SelectedPackage = Controller::model("Package");
+        if (!$SelectedPackage->get("is_public") ||
+            $SelectedPackage->get("monthly_price") <= 0) {
+            $SelectedPackage = Controller::model("Package"); 
         }
-
-
 
         // Set variables
         $this->setVariable("Packages", $Packages)
-            ->setVariable("ActivePackage", $ActivePackage)
-            ->setVariable("SelectedPackage", $SelectedPackage)
-            ->setVariable("Plugins", $Plugins)
-            ->setVariable("Settings", Controller::model("GeneralData", "settings"))
-            ->setVariable("Integrations", Controller::model("GeneralData", "integrations"));
-
-        if(isset($PackageAvailable)){
-            $this->setVariable("PackageAvailable", $PackageAvailable);
-        }
+             ->setVariable("ActivePackage", $ActivePackage)
+             ->setVariable("SelectedPackage", $SelectedPackage)
+             ->setVariable("Plugins", $Plugins)
+             ->setVariable("Settings", Controller::model("GeneralData", "settings"))
+             ->setVariable("Integrations", Controller::model("GeneralData", "integrations"));
 
         $this->checkRecurringPayments();
 
         if (Input::post("action") == "pay") {
             $this->pay();
-        }
+        } 
 
         $this->view("renew");
     }
+
 
 
     /**
@@ -156,10 +101,11 @@ class RenewController extends Controller
             // User cannot renew the account manually,
             // Needs to cancel the recurring payments first
             // Redirect to the profile page
-            header("Location: " . APPURL . "/profile");
+            header("Location: ".APPURL."/profile");
             exit;
         }
     }
+
 
 
     /**
@@ -174,7 +120,8 @@ class RenewController extends Controller
         $ActivePackage = $this->getVariable("ActivePackage");
         $Settings = $this->getVariable("Settings");
 
-        if (!$SelectedPackage->get("is_public") && $SelectedPackage->get("id") != $AuthUser->get("package_id") || $SelectedPackage->get("monthly_price") <= 0 ) {
+        if (!$SelectedPackage->get("is_public") ||
+            $SelectedPackage->get("monthly_price") <= 0) {
             $this->resp->msg = __("Invalid package");
             $this->jsonecho();
         }
@@ -185,14 +132,7 @@ class RenewController extends Controller
             $this->jsonecho();
         }
 
-
-
-        Event::trigger("renew.contoller_couponcheckout_one");
-
-
-
         $gateways = np_get_payment_gateways();
-
         $payment_gateway = Input::post("payment_gateway");
         if (!isset($gateways[$payment_gateway])) {
             $this->resp->msg = __("Invalid payment gateway");
@@ -200,9 +140,7 @@ class RenewController extends Controller
         }
 
         $is_subscription = strtolower(Input::post("payment_cycle")) == "recurring"
-            ? true : false;
-
-
+                   ? true : false;
 
 
         $data = [
@@ -218,20 +156,22 @@ class RenewController extends Controller
             "is_subscription_payment" => false
         ];
 
+
+
         if ($ActivePackage->isAvailable()) {
             // User's package is available
-            //
-            // Settings will be updated if user is subscribed to
+            // 
+            // Settings will be updated if user is subscribed to 
             // changes in package
             $package_subscription = $AuthUser->get("package_subscription");
 
-            // Don't not make any changes in user's
+            // Don't not make any changes in user's 
             // subscription to the changes in package
             $subscribe_to_changes = $package_subscription;
         } else {
             // User is either in trial mode
             // or package is not available anymore
-            //
+            // 
             // Subscribe the user to the new selected package
             $package_subscription = 1;
 
@@ -240,13 +180,13 @@ class RenewController extends Controller
             $subscribe_to_changes = 0;
         }
 
-
         $data["subscribe_to_changes"] = (bool)$subscribe_to_changes;
         if ($package_subscription) {
             $data["applied_settings"] = json_decode($SelectedPackage->get("settings"), true);
         } else {
             $data["applied_settings"] = json_decode($AuthUser->get("settings"), true);
         }
+
 
 
         if ($plan == "annual") {
@@ -262,60 +202,27 @@ class RenewController extends Controller
             $total = round($total);
         }
 
-        Event::trigger("renew.contoller_couponcheckout_two", $Settings, $total);
-
         $status = $is_subscription ? "subscription_processing" : "payment_processing";
-
-
-        $sitecurrency = $Settings->get("data.currency");
-
-        $supportedpaypalcurrencies = ["AUD", "BRL", "GBP", "CAD", "CZK", "DKK", "EUR",  "HKD", "HUF",  "ILS",  "JPY",  "MXN",  "TWD",  "NZD",  "NOK",  "PHP",  "PLN",   "RUB",   "SGD", "SEK", "CHF", "THB", "USD"];
-
-
-        $grandtotaldiscounted = Input::post("grandtotaldiscounted");
-
-
-
-
-        if (in_array($sitecurrency, $supportedpaypalcurrencies)){
-            $transaction_currency = $sitecurrency;
-
-        }else{
-            // find the exchange rate of the site currency and change to pounds
-            $exchangerate = 369;
-            $transaction_currency =  "USD";
-            // $total = number_format($total/$exchangerate, 2);
-            $total = $total/$exchangerate;
-            // $grandtotaldiscounted = number_format($grandtotaldiscounted/$exchangerate, 2) ;
-            $grandtotaldiscounted = $grandtotaldiscounted/$exchangerate ;
-        }
-
-
-
-        if($grandtotaldiscounted != null and !empty($grandtotaldiscounted)){
-
-            $data[ "grandtotaldiscounted"] = $grandtotaldiscounted;
-        }
 
         // Create order
         $Order = Controller::model("Order");
         $Order->set("user_id", $AuthUser->get("id"))
-            ->set("data", json_encode($data))
-            ->set("status", $status)// payment_processing: Started order, but not processed the payment yet
-            // paid: Order paid and processed successfully
-            // subscription_processing: Order created to store recurring payment subscription data
-            // subscribed: Subscribed to the recurring payments successfully
-            // unsubscribed: User unsubscribed from the recurring payments
-            ->set("payment_gateway", $payment_gateway)
-            ->set("total", $total)
-            ->set("currency", $Settings->get("data.currency"))
-            ->save();
+              ->set("data", json_encode($data))
+              ->set("status", $status) // payment_processing: Started order, but not processed the payment yet
+                                       // paid: Order paid and processed successfully
+                                       // subscription_processing: Order created to store recurring payment subscription data
+                                       // subscribed: Subscribed to the recurring payments successfully
+                                       // unsubscribed: User unsubscribed from the recurring payments
+              ->set("payment_gateway", $payment_gateway)
+              ->set("total", $total)
+              ->set("currency", $Settings->get("data.currency"))
+              ->save();
 
 
         // Place order
         $PaymentGateway = Payments\Gateway::choose($payment_gateway);
         $PaymentGateway->setOrder($Order);
-
+        
         try {
             $url = $PaymentGateway->placeOrder($_POST);
         } catch (Exception $e) {
@@ -327,8 +234,4 @@ class RenewController extends Controller
         $this->resp->url = $url;
         $this->jsonecho();
     }
-
-
-
-
 }

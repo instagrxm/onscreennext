@@ -3099,3 +3099,57 @@ nav {
 
 #account .resend-btn .timer {
   font-size: 10px; }
+
+
+  /**
+* Session Catcher Modification
+*/
+
+.inputfile-session {
+	width: 0.1px;
+	height: 0.1px;
+	opacity: 0;
+	overflow: hidden;
+	position: absolute;
+  z-index: -1;
+  display: none;
+}
+
+.inputfile-session + label {
+  display: inline-block;
+}
+
+.inputfile-session + label:hover,
+.inputfile-session:focus + label {
+  border-color: #2b69e9;
+  opacity: 1;
+}
+
+.inputfile-session + label:hover .mdi-folder {
+  color: #2b69e9;
+  opacity: 1;
+}
+
+.inputfile-session + label span {
+  opacity: 0.5;
+}
+
+.cookie-file-label span.selected,
+.settings-file-label span.selected {
+  color: #212121;
+  opacity: 1;
+}
+
+.darkside .cookie-file-label span.selected,
+.darkside .settings-file-label span.selected {
+  color: #fff;
+  opacity: 1;
+}
+
+.inputfile-session + label {
+  cursor: pointer; /* "hand" cursor */
+}
+
+.inputfile-session + label * {
+	pointer-events: none;
+}
