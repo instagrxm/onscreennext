@@ -14,23 +14,23 @@ msgstr "Missing some of required data."
 
 #: 
 msgid "Please include a valid username."
-msgstr "Please include a valid username."
+msgstr "Nom utilisateur."
 
 #: 
 msgid "Account is already exists!"
-msgstr "Account is already exists!"
+msgstr "Le compte existe déja!"
 
 #: 
 msgid "Proxy is not valid or active!"
-msgstr "Proxy is not valid or active!"
+msgstr "Le proxy n'est pas valide ou actif!"
 
 #: 
 msgid "Encryption error"
-msgstr "Encryption error"
+msgstr "erreur de chiffre"
 
 #: 
 msgid "Enter the code sent to your number ending in %s"
-msgstr "Enter the code sent to your number ending in %s"
+msgstr "Entrez votre code qui à été envoyé sur votre numéro  %s "
 
 #: 
 msgid "Your account has been disabled for violating Instagram terms. <a href='%s'>Click here</a> to learn how you may be able to restore your account."
@@ -42,47 +42,47 @@ msgstr "Your account has been banned from Instagram API for spam behaviour or ot
 
 #: 
 msgid "The password you entered is incorrect. Please try again."
-msgstr "The password you entered is incorrect. Please try again."
+msgstr "Le mot de passe est incorrect . S'il vous plait réessayez."
 
 #: 
 msgid "The username you entered doesn't appear to belong to an account. Please check your username and try again."
-msgstr "The username you entered doesn't appear to belong to an account. Please check your username and try again."
+msgstr "Le nom d'utilisateur n'est pas correct. Please check your username and try again."
 
 #: 
 msgid "Oops! Something went wrong. Please try again later!"
-msgstr "Oops! Something went wrong. Please try again later!"
+msgstr "Oops! Quelque chose s'est mal passé. Veuillez réessayer plus tard!"
 
 #: 
 msgid "Changes saved!"
-msgstr "Changes saved!"
+msgstr "Changements sauvegardés!"
 
 #: 
 msgid "Please check the security code sent you and try again."
-msgstr "Please check the security code sent you and try again."
+msgstr "Veuillez vérifier le code de sécurité qui vous a été envoyé et réessayer."
 
 #: 
 msgid "SMS sent."
-msgstr "SMS sent."
+msgstr "Sms envoyé."
 
 #: 
 msgid "An error occured while verifying the security code."
-msgstr "An error occured while verifying the security code."
+msgstr "Une erreur est survenue lors de la vérification du code de sécurité.."
 
 #: 
 msgid "Please try again some time later."
-msgstr "Please try again some time later."
+msgstr "Veuillez réessayer un peu plus tard."
 
 #: 
 msgid "Couldn't verify the security code."
-msgstr "Couldn't verify the security code."
+msgstr "Impossible de vérifier le code de sécurité."
 
 #: 
 msgid "Please check the code sent to you and try again."
-msgstr "Please check the code sent to you and try again."
+msgstr "Veuillez vérifier le code qui vous a été envoyé et réessayer."
 
 #: 
 msgid "Sorry, we couldn't add this account at the moment."
-msgstr "Sorry, we couldn't add this account at the moment."
+msgstr "Désolé, nous n'avons pas pu ajouter ce compte pour le moment."
 
 #: 
 msgid "Please goto <a href='http://instagram.com' target='_blank'>instagram.com</a> and pass challenge!"
@@ -90,7 +90,7 @@ msgstr "Please goto <a href='http://instagram.com' target='_blank'>instagram.com
 
 #: 
 msgid "Enter the 6-digit code sent to the email address %s"
-msgstr "Enter the 6-digit code sent to the email address %s"
+msgstr "Entrez le code à 6 chiffres qui vous à tété envoyé à l'adresse email"
 
 #: 
 msgid "Please goto <a href='http://instagram.com' target='_blank'>instagram.com</a> and pass checkpoint!"
@@ -106,7 +106,7 @@ msgstr "Invalid ID"
 
 #: 
 msgid "Account is not available."
-msgstr "Account is not available."
+msgstr "Le compte n'est pas disponible."
 
 #: 
 msgid "Re-login required for %s"
@@ -114,7 +114,7 @@ msgstr "Re-login required for %s"
 
 #: 
 msgid "Post is not available!"
-msgstr "Post is not available!"
+msgstr "La publication n'est pas disponible!"
 
 #: 
 msgid "Post status is not valid!"
@@ -122,7 +122,7 @@ msgstr "Post status is not valid!"
 
 #: 
 msgid "Post type is not valid!"
-msgstr "Post type is not valid!"
+msgstr "Le type de poste n'est pas valide!"
 
 #: 
 msgid "Your access to the script has been disabled!"
@@ -134,39 +134,39 @@ msgstr "At least 2 media file is required for the album post."
 
 #: 
 msgid "Couldn't find selected media for the story"
-msgstr "Couldn't find selected media for the story"
+msgstr "Impossible de trouver le média sélectionné "
 
 #: 
 msgid "Couldn't find selected media for the post"
-msgstr "Couldn't find selected media for the post"
+msgstr "Impossible de trouver le média sélectionné "
 
 #: 
 msgid "You don't have a permission for video posts."
-msgstr "You don't have a permission for video posts."
+msgstr "Vous n'avez pas la permission de poster des vidéos."
 
 #: 
 msgid "You don't have a permission for story videos."
-msgstr "You don't have a permission for story videos."
+msgstr "Vous n'avez pas la permission pour les vidéos ."
 
 #: 
 msgid "You don't have a permission for videos in album."
-msgstr "You don't have a permission for videos in album."
+msgstr "Vous n'avez pas la permission pour les vidéos dans l'album."
 
 #: 
 msgid "You don't have a permission for photo posts."
-msgstr "You don't have a permission for photo posts."
+msgstr "Vous n'avez pas la permission de poster des photos."
 
 #: 
 msgid "You don't have a permission for story photos."
-msgstr "You don't have a permission for story photos."
+msgstr "Vous n'avez pas la permission pour les photos d'histoire."
 
 #: 
 msgid "You don't have a permission for photos in album."
-msgstr "You don't have a permission for photos in album."
+msgstr "Vous n'avez pas la permission pour les photos dans l'album."
 
 #: 
 msgid "It's not possible to post video files right now!"
-msgstr "It's not possible to post video files right now!"
+msgstr "Il n'est pas possible de poster des fichiers vidéo maintenant!"
 
 #: 
 msgid "Oops! An error occured. Please try again later!"
@@ -190,7 +190,7 @@ msgstr "Invalid token"
 
 #: 
 msgid "Account is not active"
-msgstr "Account is not active"
+msgstr "Votre compte n'est pas actif"
 
 #: 
 msgid "Package added successfully! Please refresh the page."
@@ -198,7 +198,7 @@ msgstr "Package added successfully! Please refresh the page."
 
 #: 
 msgid "Changes saved and subscribers updated!"
-msgstr "Changes saved and subscribers updated!"
+msgstr "Changements enregistrés et abonnés mis à jour!"
 
 #: 
 msgid "Package doesn't exist!"
@@ -206,11 +206,11 @@ msgstr "Package doesn't exist!"
 
 #: 
 msgid "Password must be at least 6 character length!"
-msgstr "Password must be at least 6 character length!"
+msgstr "Le mot de passe doit comporter au moins 6 caractères.!"
 
 #: 
 msgid "Password confirmation didn't match!"
-msgstr "Password confirmation didn't match!"
+msgstr "La confirmation du mot de passe ne correspond pas!"
 
 #: 
 msgid "All fields are required!"
@@ -274,19 +274,19 @@ msgstr "Please select one media for this post."
 
 #: 
 msgid "Please select an Instagram account to post."
-msgstr "Please select an Instagram account to post."
+msgstr "Veuillez sélectionner un compte Instagram pour publier."
 
 #: 
 msgid "Post has been scheduled to %s"
-msgstr "Post has been scheduled to %s"
+msgstr "La publication a été programmée pour %s"
 
 #: 
 msgid "Post has been re-scheduled to %s"
-msgstr "Post has been re-scheduled to %s"
+msgstr " La publication a été reportée au %s"
 
 #: 
 msgid "Post published successfully! <a href='%s'>View post</a>"
-msgstr "Post published successfully! <a href='%s'>View post</a>"
+msgstr "Publication publiée avec succès! <a href='%s'>View post</a>"
 
 #: 
 msgid "Invalid account ID"
@@ -476,7 +476,7 @@ msgstr "Use the TAB key to insert emoji faster"
 
 #: 
 msgid "Total Posts"
-msgstr "Total Posts"
+msgstr "Total Post"
 
 #: 
 msgid "Followers"
@@ -492,11 +492,11 @@ msgstr "Uploading..."
 
 #: 
 msgid "Do you really want to cancel automatic payments?"
-msgstr "Do you really want to cancel automatic payments?"
+msgstr "Voulez-vous annuler les paiements automatiques?"
 
 #: 
 msgid "Yes, cancel automatic payments"
-msgstr "Yes, cancel automatic payments"
+msgstr "Oui, annuler les paiements automatiques"
 
 #: 
 msgid "No"
@@ -884,15 +884,15 @@ msgstr "Verify Email"
 
 #: 
 msgid "New Account"
-msgstr "New Account"
+msgstr "Nouveau compte"
 
 #: 
 msgid "Saved Accounts"
-msgstr "Saved Accounts"
+msgstr "Compte enregistré"
 
 #: 
 msgid "Calendar"
-msgstr "Calendar"
+msgstr "Calendrier"
 
 #: 
 msgid "New Caption"
@@ -904,7 +904,7 @@ msgstr "Caption Templates"
 
 #: 
 msgid "Add new"
-msgstr "Add new"
+msgstr "Ajouter un nouveau"
 
 #: 
 msgid "Account Verification"
@@ -920,7 +920,7 @@ msgstr "Email Verification"
 
 #: 
 msgid "Account Expired"
-msgstr "Account Expired"
+msgstr "Compte expiré"
 
 #: 
 msgid "Username"
@@ -956,19 +956,19 @@ msgstr "It's recommended to to use a proxy belongs to the country where you've l
 
 #: 
 msgid "Security Code"
-msgstr "Security Code"
+msgstr "Code de sécurité"
 
 #: 
 msgid "Enter security code"
-msgstr "Enter security code"
+msgstr "Entrez votre code de sécurité"
 
 #: 
 msgid "Didn't get a security code?"
-msgstr "Didn't get a security code?"
+msgstr "Vous n'avez pas reçu de code de sécurité?"
 
 #: 
 msgid "Resend it"
-msgstr "Resend it"
+msgstr "Renvoyer"
 
 #: 
 msgid "after %s seconds"
@@ -988,15 +988,15 @@ msgstr "Save changes"
 
 #: 
 msgid "Add account"
-msgstr "Add account"
+msgstr "Ajouter un compte"
 
 #: 
 msgid "Confirm"
-msgstr "Confirm"
+msgstr "Confirmation"
 
 #: 
 msgid "Added on %s"
-msgstr "Added on %s"
+msgstr "Ajouté on %s"
 
 #: 
 msgid "Re-login required!"
@@ -2214,7 +2214,7 @@ msgstr "Profile"
 
 #: 
 msgid "Account Type"
-msgstr "Account Type"
+msgstr "Type de compte"
 
 #: 
 msgid "Regular User"
@@ -2234,11 +2234,11 @@ msgstr "Active"
 
 #: 
 msgid "Deactive"
-msgstr "Deactive"
+msgstr "Désactiver"
 
 #: 
 msgid "Expire date"
-msgstr "Expire date"
+msgstr "Date d'expiration"
 
 #: 
 msgid "Package"
@@ -2262,11 +2262,11 @@ msgstr "Regular user"
 
 #: 
 msgid "Expire date: %s"
-msgstr "Expire date: %s"
+msgstr "Date d'expiration: %s"
 
 #: 
 msgid "Expired"
-msgstr "Expired"
+msgstr "Expiré"
 
 #: 
 msgid "Couldn't find any result for your search query."
@@ -2286,11 +2286,11 @@ msgstr "Edit Post"
 
 #: 
 msgid "New Post"
-msgstr "New Post"
+msgstr "Nouveau post"
 
 #: 
 msgid "Dashboard"
-msgstr "Dashboard"
+msgstr "Tableau de bord"
 
 #: 
 msgid "Proxies"
@@ -2310,7 +2310,7 @@ msgstr "Clear storage"
 
 #: 
 msgid "Do you really want to remove all of your files? Your scheduled posts will not be published. This action not be undone."
-msgstr "Do you really want to remove all of your files? Your scheduled posts will not be published. This action not be undone."
+msgstr "Voulez-vous vraiment supprimer tous vos fichiers? Vos messages programmés ne seront pas publiés. "
 
 #: 
 msgid "Please verify the reCaptcha."

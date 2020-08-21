@@ -62,62 +62,23 @@ class InstagramController extends Controller
         }
 
         // Login to instagram
-try {
-   $Instagram->login();
-} catch (\Exception $e) {
-   // Couldn't login to Instagram account
-   $msg = $e->getMessage();
-   if (stripos($msg, "Challenge required") !== false) { 
-      $Account->set("login_required", 1)->update();
-      $text[0] = __("Challenge Required");
-      $text[1] = __("Please pass the verification challenge. Go to Saved Accounts and click the Edit button. Fill the login form and connect your account again by saving changes.");
-      $separated = implode(" | ", $text);
-      throw new Exception($separated);
-   } else if (stripos($msg, "Checkpoint required") !== false) {
-      $Account->set("login_required", 1)->update();
-      $text[0] = __("Checkpoint Required");
-      $text[1] = __("Please go to <a href='http://instagram.com' target='_blank'>Instagram</a> website or mobile app and pass checkpoint. After that try re-connect your account again by clicking Save Changes.");
-      $separated = implode(" | ", $text);
-      throw new Exception($separated);
-   } else if (stripos($msg, "Consent required") !== false) {
-      $Account->set("login_required", 1)->update();
-      $text[0] = __("Instagram updated Terms and Data Policy");
-      $text[1] = __("Please go to <a href='http://instagram.com' target='_blank'>Instagram</a> website or mobile app to review these changes and accept them. After that try re-connect your account again.");
-      $separated = implode(" | ", $text);
-      throw new Exception($separated);
-   } else if (stripos($msg, "Account disabled") !== false) {
-      $Account->set("login_required", 1)->update();
-      $text[0] = __("Account Disabled");
-      $text[1] = __("Your account has been disabled for violating Instagram terms. <a href='%s'>Click here</a> to learn how you may be able to restore your account.","https://help.instagram.com/366993040048856");
-      $separated = implode(" | ", $text);
-      throw new Exception($separated);
-   } else if (stripos($msg, "Incorrect password") !== false) {
-      $Account->set("login_required", 1)->update();
-      $text[0] = __("You changed account password?");
-      $text[1] = __("Go to Saved Accounts and click the Edit button. Fill the login form and connect your account again by saving changes.");
-      $separated = implode(" | ", $text);
-      throw new Exception($separated);
-   } else if (stripos($msg, "Incorrect username") !== false) {
-      $Account->set("login_required", 1)->update();
-      $text[0] = __("You changed account username?");
-      $text[1] = __("Go to Saved Accounts and click the Edit button. Fill the login form and connect your account again by saving changes.");
-      $separated = implode(" | ", $text);
-      throw new Exception($separated);
-   } else if (stripos($msg, "Login required") !== false) {
-      $Account->set("login_required", 1)->update();
-      $text[0] = __("Login Required");
-      $text[1] = __("Fill the login form and connect your account again by saving changes.");
-      $separated = implode(" | ", $text);
-      throw new Exception($separated);
-   } else {
-      // Re-throw the error
-      // Couldn't login to Instagram account
-      $text[0] = __("Internal Error");
-      $text[1] = $msg;
-      $e = implode(" | ", $text);
-      throw $e;
-   }
-}
+        try {
+            $last_login_timestamp = strtotime($Account->get("last_login"));
+            if ($last_login_timestamp && $last_login_timestamp + 15 * 60 > time()) {
+                // Recent login, there is no need to re-send login flow
+                \InstagramAPI\Instagram::$sendLoginFlow = false;
+            }
+            $Instagram->login($Account->get("username"), $password);
+        } catch (InstagramAPI\Exception\InstagramException $e) {
+            // Couldn't login to Instagram account
+            $msg = $e->getMessage();
+            $msg = explode(":", $msg, 2);
+            $msg = isset($msg[1]) ? $msg[1] : $msg[0];
+            $Account->set("login_required", 1)->update();
+            throw new \Exception($msg);
+        } catch (\Exception $e) {
+            throw $e;
+        }
 
         // Logged in successfully
         $Account->set("last_login", date("Y-m-d H:i:s"))->update();

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<files psalm-version="3.9.4@352bd3f5c5789db04e4010856c2f4e01ed354f4e">
+  <file src="src/Builder/DegradedUuidBuilder.php">
+    <DeprecatedClass occurrences="3">
+      <code>new DegradedTimeConverter()</code>
+      <code>DegradedUuid</code>
+    </DeprecatedClass>
+  </file>
+  <file src="src/Converter/Number/DegradedNumberConverter.php">
+    <DeprecatedClass occurrences="1">
+      <code>BigNumberConverter</code>
+    </DeprecatedClass>
+  </file>
+  <file src="src/Converter/Time/DegradedTimeConverter.php">
+    <DeprecatedClass occurrences="1">
+      <code>BigNumberTimeConverter</code>
+    </DeprecatedClass>
+  </file>
+  <file src="src/Converter/Time/PhpTimeConverter.php">
+    <InvalidOperand occurrences="2">
+      <code>$uuidTime</code>
+      <code>$uuidTime</code>
+    </InvalidOperand>
+  </file>
+  <file src="src/Generator/PeclUuidRandomGenerator.php">
+    <MixedAssignment occurrences="1">
+      <code>$uuid</code>
+    </MixedAssignment>
+    <MixedInferredReturnType occurrences="1">
+      <code>string</code>
+    </MixedInferredReturnType>
+    <MixedReturnStatement occurrences="1">
+      <code>uuid_parse($uuid)</code>
+    </MixedReturnStatement>
+  </file>
+  <file src="src/Generator/PeclUuidTimeGenerator.php">
+    <MixedAssignment occurrences="1">
+      <code>$uuid</code>
+    </MixedAssignment>
+    <MixedInferredReturnType occurrences="1">
+      <code>string</code>
+    </MixedInferredReturnType>
+    <MixedReturnStatement occurrences="1">
+      <code>uuid_parse($uuid)</code>
+    </MixedReturnStatement>
+  </file>
+  <file src="src/Generator/PeclUuidNameGenerator.php">
+    <ImpureFunctionCall occurrences="3">
+      <code>uuid_generate_md5</code>
+      <code>uuid_generate_sha1</code>
+      <code>uuid_parse</code>
+    </ImpureFunctionCall>
+  </file>
+  <file src="src/Provider/Dce/SystemDceSecurityProvider.php">
+    <ForbiddenCode occurrences="5">
+      <code>shell_exec('id -u')</code>
+      <code>shell_exec('id -g')</code>
+      <code>shell_exec('whoami /user /fo csv /nh')</code>
+      <code>shell_exec('net user %username% | findstr /b /i "Local Group Memberships"')</code>
+      <code>shell_exec('wmic group get name,sid | findstr /b /i ' . escapeshellarg($firstGroup))</code>
+    </ForbiddenCode>
+  </file>
+  <file src="src/Provider/Node/SystemNodeProvider.php">
+    <MixedArgument occurrences="1">
+      <code>$macs</code>
+    </MixedArgument>
+    <MixedAssignment occurrences="1">
+      <code>$node</code>
+    </MixedAssignment>
+  </file>
+  <file src="src/Uuid.php">
+    <ImpureMethodCall occurrences="6">
+      <code>getFactory</code>
+      <code>getFactory</code>
+      <code>getFactory</code>
+      <code>getFactory</code>
+      <code>getFactory</code>
+      <code>getFactory</code>
+    </ImpureMethodCall>
+  </file>
+</files>

@@ -27,7 +27,7 @@ $langslug = $langs ? "[".implode("|", $langs).":lang]" : "";
 // This is useful in case of self use, or having different 
 // landing page in different address. For ex: you can install the script
 // to subdirectory or subdomain of your wordpress website.
-App::addRoute("GET|POST", "/", "Login");
+App::addRoute("GET|POST", "/", "Index");
 App::addRoute("GET|POST", "/".$langslug."?/?", "Index");
 
 // Login
